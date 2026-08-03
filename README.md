@@ -34,6 +34,30 @@ on the same check. Everything here follows from that number.
 
 ---
 
+## What comes out
+
+![Evaluation dashboard — coverage, policy accuracy, latency and an unread metric](docs/gallery/evaluate-overview.png)
+
+**A product screen.** The metric that could not be read shows `ABSENT · not exposed at this access
+level` instead of a zero, and the banner states that score deltas are withheld while coverage sits
+below the threshold. A failed read has no business looking like a measurement.
+
+![Evaluation run — scored questions with evidence](docs/gallery/justie-run.png)
+
+**A dense results table.** A row opens onto the answer, the retrieved source and the rubric line
+that was missed, so a score can be argued with rather than only reported.
+
+![Landing page — editorial serif headline, one accent, figure band](docs/gallery/landing-hero.png)
+
+**A landing page.** Editorial serif over a grotesque body, one accent, and the figures collected
+in a band under the hero rather than scattered through the copy.
+
+All three came out of the same four commands. What separates them from an average result is not
+the number of engines — it is that the brief carried numbers: named faces, hex values, a type
+floor, a row height.
+
+---
+
 ## What it does
 
 ```
