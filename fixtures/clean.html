@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>fixture — clean</title>
+<!-- Nothing wrong. Any finding on this file is a false positive. -->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { width: 1200px; background: #F4F6F8;
+         font: 16px/1.4 Arial, sans-serif; color: #111827; }
+  .frame { position: relative; width: 1200px; height: 800px;
+           padding: 40px; overflow: hidden; background: #F4F6F8; }
+  .card { padding: 20px; background: #fff; border: 1px solid #E2E8F0; border-radius: 10px; }
+  .row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="row">
+      <div class="card"><h2>One</h2><p>Ordinary content that fits.</p></div>
+      <div class="card"><h2>Two</h2><p>Ordinary content that fits.</p></div>
+      <div class="card"><h2>Three</h2><p>Ordinary content that fits.</p></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>fixture — busts-card-right</title>
+<!-- Grid columns sum past the card content width. -->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { width: 1200px; background: #F4F6F8;
+         font: 16px/1.4 Arial, sans-serif; color: #111827; }
+  .frame { position: relative; width: 1200px; height: 800px;
+           padding: 40px; overflow: hidden; background: #F4F6F8; }
+  .card { padding: 20px; background: #fff; border: 1px solid #E2E8F0; border-radius: 10px; }
+  .table { display: grid; grid-template-columns: 300px 300px 300px 300px; }
+  .cell { padding: 8px; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="card">
+      <div class="table">
+        <div class="cell">first</div><div class="cell">second</div>
+        <div class="cell">third</div><div class="cell">runs past the right edge</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

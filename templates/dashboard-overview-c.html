@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas Support Bot — Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple: #7865f2;
+      --purple-deep: #6c58ed;
+      --purple-tab: #8d79f2;
+      --row-active: #ece9fc;
+      --green: #00ba85;
+      --red: #c63c3c;
+      --amber: #f1ac2b;
+      --ink: #292d34;
+      --ink-soft: #656f7d;
+      --ink-faint: #767c86;
+      --line: #e6e6ea;
+      --bg: #fbfbfb;
+      --panel: #ffffff;
+      --panel-2: #f4f4f6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.45;
+    }
+
+    button, select {
+      font: inherit;
+      color: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    header {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 42px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-width: 305px;
+    }
+
+    .mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--purple);
+      color: var(--panel);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .product-name {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .system-label {
+      color: var(--ink-soft);
+      padding-left: 18px;
+      border-left: 1px solid var(--line);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-label {
+      color: var(--ink-faint);
+      font-size: 12px;
+    }
+
+    select {
+      appearance: none;
+      min-width: 190px;
+      padding: 9px 34px 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background-color: var(--panel);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23656f7d' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      cursor: pointer;
+    }
+
+    .build {
+      padding-left: 28px;
+      border-left: 1px solid var(--line);
+      color: var(--ink-soft);
+    }
+
+    .build strong {
+      color: var(--ink);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 34px 42px 48px;
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+
+    h1, h2, p { margin: 0; }
+
+    h1 {
+      font-size: 24px;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+      font-weight: 600;
+    }
+
+    .subhead {
+      margin-top: 7px;
+      color: var(--ink-soft);
+    }
+
+    .provisional {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink-soft);
+      background: var(--panel);
+      font-size: 12px;
+    }
+
+    .provisional-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .metric {
+      min-height: 164px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 17px;
+    }
+
+    .ring {
+      flex: 0 0 82px;
+      height: 82px;
+      position: relative;
+    }
+
+    .ring svg {
+      width: 82px;
+      height: 82px;
+      transform: rotate(-90deg);
+    }
+
+    .ring-track {
+      fill: none;
+      stroke: var(--panel-2);
+      stroke-width: 7;
+    }
+
+    .ring-value {
+      fill: none;
+      stroke: var(--purple);
+      stroke-width: 7;
+      stroke-linecap: round;
+    }
+
+    .ring-value.green { stroke: var(--green); }
+    .ring-value.amber { stroke: var(--amber); }
+
+    .ring-center {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ring-center.dash {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--ink-faint);
+    }
+
+    .metric-copy {
+      min-width: 0;
+    }
+
+    .metric-label {
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+
+    .metric-number {
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+
+    .metric-note {
+      margin-top: 5px;
+      color: var(--ink-faint);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .locked {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--ink-faint);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .lock {
+      width: 11px;
+      height: 9px;
+      border: 1px solid var(--ink-faint);
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .lock:before {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      left: 1.5px;
+      top: -6px;
+      border: 1px solid var(--ink-faint);
+      border-bottom: 0;
+      border-radius: 5px 5px 0 0;
+    }
+
+    .section {
+      margin-top: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .section-meta {
+      color: var(--ink-faint);
+      font-size: 12px;
+    }
+
+    .chart-card {
+      padding: 18px 20px 14px;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      color: var(--ink-soft);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .legend-line {
+      width: 18px;
+      height: 2px;
+      background: var(--purple);
+    }
+
+    .legend-target {
+      width: 18px;
+      border-top: 1px dashed var(--ink-faint);
+    }
+
+    .legend-break {
+      width: 18px;
+      border-top: 2px dashed var(--amber);
+    }
+
+    .chart-wrap {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .chart {
+      display: block;
+      width: 100%;
+      min-width: 700px;
+      height: 250px;
+    }
+
+    .grid-line { stroke: var(--line); stroke-width: 1; }
+    .axis-label {
+      fill: var(--ink-faint);
+      font-family: Inter, sans-serif;
+      font-size: 11px;
+    }
+    .target-line {
+      stroke: var(--ink-faint);
+      stroke-width: 1;
+      stroke-dasharray: 4 4;
+    }
+    .trend {
+      fill: none;
+      stroke: var(--purple);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .point {
+      fill: var(--panel);
+      stroke: var(--purple);
+      stroke-width: 2.5;
+    }
+    .interrupted {
+      fill: var(--panel);
+      stroke: var(--amber);
+      stroke-width: 2;
+      stroke-dasharray: 3 3;
+    }
+    .chart-note {
+      fill: var(--ink-faint);
+      font-family: Inter, sans-serif;
+      font-size: 10px;
+    }
+
+    .lower-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(315px, 0.85fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .table-card {
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    th {
+      padding: 12px 14px;
+      text-align: left;
+      color: var(--ink-faint);
+      background: var(--panel-2);
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-soft);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: background 120ms ease;
+    }
+
+    tbody tr:hover,
+    tbody tr.active {
+      background: var(--row-active);
+    }
+
+    td:first-child {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status:before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .status.review:before { background: var(--amber); }
+    .status.failed:before { background: var(--red); }
+
+    .attribution-card {
+      padding: 19px 20px 21px;
+    }
+
+    .attribution-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      padding-bottom: 17px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .attribution-run {
+      color: var(--ink-soft);
+      font-size: 12px;
+      margin-top: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .failure-total {
+      text-align: right;
+      font-size: 20px;
+      line-height: 1.1;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .failure-total span {
+      display: block;
+      margin-top: 4px;
+      color: var(--ink-faint);
+      font-size: 11px;
+      font-weight: 400;
+    }
+
+    .bars {
+      padding-top: 18px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 76px 1fr 34px;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 17px;
+    }
+
+    .bar-label {
+      color: var(--ink-soft);
+      text-transform: capitalize;
+      font-size: 12px;
+    }
+
+    .bar-track {
+      height: 8px;
+      border-radius: 8px;
+      background: var(--panel-2);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 8px;
+      background: var(--purple);
+      width: var(--width);
+    }
+
+    .bar-row:nth-child(2) .bar-fill { background: var(--purple-tab); }
+    .bar-row:nth-child(3) .bar-fill { background: var(--amber); }
+    .bar-row:nth-child(4) .bar-fill { background: var(--red); }
+
+    .bar-number {
+      text-align: right;
+      color: var(--ink-soft);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .attribution-foot {
+      border-top: 1px solid var(--line);
+      padding-top: 13px;
+      color: var(--ink-faint);
+      font-size: 11px;
+    }
+
+    @media (max-width: 1050px) {
+      header { padding: 0 24px; }
+      main { padding-left: 24px; padding-right: 24px; }
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .lower-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 700px) {
+      header {
+        height: auto;
+        padding: 16px 18px;
+        align-items: flex-start;
+        gap: 14px;
+        flex-direction: column;
+      }
+      .header-controls { width: 100%; gap: 14px; flex-wrap: wrap; }
+      .brand { min-width: 0; }
+      .build { padding-left: 14px; }
+      main { padding: 24px 18px 36px; }
+      .page-heading { align-items: flex-start; gap: 16px; flex-direction: column; }
+      .metrics { grid-template-columns: 1fr; }
+      .table-card { overflow-x: auto; }
+      table { min-width: 760px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="mark">A</div>
+        <div class="product-name">Evalspace</div>
+        <div class="system-label">Atlas Support Bot</div>
+      </div>
+      <div class="header-controls">
+        <div class="control">
+          <span class="control-label">Dataset</span>
+          <select aria-label="Dataset">
+            <option>Support FAQ ru</option>
+            <option>Support FAQ en</option>
+          </select>
+        </div>
+        <div class="build">Current <strong>build 118</strong></div>
+      </div>
+    </header>
+
+    <main>
+      <div class="page-heading">
+        <div>
+          <h1>Overview</h1>
+          <p class="subhead">Evaluation health across the latest system builds</p>
+        </div>
+        <div class="provisional">
+          <span class="provisional-dot"></span>
+          <span>Scores are <strong>PROVISIONAL</strong> below 98% coverage</span>
+        </div>
+      </div>
+
+      <section class="metrics" aria-label="Evaluation metrics">
+        <article class="card metric">
+          <div class="ring" aria-hidden="true">
+            <svg viewBox="0 0 82 82">
+              <circle class="ring-track" cx="41" cy="41" r="35"></circle>
+              <circle class="ring-value" cx="41" cy="41" r="35" stroke-dasharray="180.3 219.9"></circle>
+            </svg>
+            <div class="ring-center">82%</div>
+          </div>
+          <div class="metric-copy">
+            <div class="metric-label">Coverage</div>
+            <div class="metric-number">82%</div>
+            <div class="metric-note">82 of 100 questions received a reply</div>
+          </div>
+        </article>
+
+        <article class="card metric">
+          <div class="ring" aria-hidden="true">
+            <svg viewBox="0 0 82 82">
+              <circle class="ring-track" cx="41" cy="41" r="35"></circle>
+              <circle class="ring-value green" cx="41" cy="41" r="35" stroke-dasharray="175.9 219.9"></circle>
+            </svg>
+            <div class="ring-center">2.4</div>
+          </div>
+          <div class="metric-copy">
+            <div class="metric-label">Policy Accuracy</div>
+            <div class="metric-number">2.4 / 3</div>
+            <div class="metric-note">Provisional · target is 2.7 / 3</div>
+          </div>
+        </article>
+
+        <article class="card metric">
+          <div class="ring" aria-hidden="true">
+            <svg viewBox="0 0 82 82">
+              <circle class="ring-track" cx="41" cy="41" r="35"></circle>
+              <circle class="ring-value amber" cx="41" cy="41" r="35" stroke-dasharray="153.9 219.9"></circle>
+            </svg>
+            <div class="ring-center">41s</div>
+          </div>
+          <div class="metric-copy">
+            <div class="metric-label">p95 Latency</div>
+            <div class="metric-number">41s</div>
+            <div class="metric-note">Across completed evaluations</div>
+          </div>
+        </article>
+
+        <article class="card metric">
+          <div class="ring" aria-hidden="true">
+            <svg viewBox="0 0 82 82">
+              <circle class="ring-track" cx="41" cy="41" r="35"></circle>
+            </svg>
+            <div class="ring-center dash">—</div>
+          </div>
+          <div class="metric-copy">
+            <div class="metric-label">Injection Resistance</div>
+            <div class="metric-number">—</div>
+            <div class="locked"><span class="lock"></span>not exposed at this access level</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Quality trajectory</h2>
+          <div class="section-meta">Build sequence · target 90%</div>
+        </div>
+        <div class="card chart-card">
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-line"></span>quality score</span>
+            <span class="legend-item"><span class="legend-target"></span>target</span>
+            <span class="legend-item"><span class="legend-break"></span>did not finish</span>
+          </div>
+          <div class="chart-wrap">
+            <svg class="chart" viewBox="0 0 1000 250" role="img" aria-label="Quality score by build sequence from build 112 through build 118. Build 116 did not finish and is excluded from the trend.">
+              <line class="grid-line" x1="57" y1="35" x2="966" y2="35"></line>
+              <line class="grid-line" x1="57" y1="77" x2="966" y2="77"></line>
+              <line class="grid-line" x1="57" y1="119" x2="966" y2="119"></line>
+              <line class="grid-line" x1="57" y1="161" x2="966" y2="161"></line>
+              <line class="grid-line" x1="57" y1="203" x2="966" y2="203"></line>
+              <line class="target-line" x1="57" y1="77" x2="966" y2="77"></line>
+
+              <text class="axis-label" x="18" y="39">100%</text>
+              <text class="axis-label" x="27" y="81">90%</text>
+              <text class="axis-label" x="27" y="123">80%</text>
+              <text class="axis-label" x="27" y="165">70%</text>
+              <text class="axis-label" x="27" y="207">60%</text>
+              <text class="axis-label" x="916" y="70">target</text>
+
+              <path class="trend" d="M85 119 L237 106 L389 127 L541 98"></path>
+              <path class="trend" d="M693 94 L845 85 L966 85"></path>
+
+              <circle class="point" cx="85" cy="119" r="5"></circle>
+              <circle class="point" cx="237" cy="106" r="5"></circle>
+              <circle class="point" cx="389" cy="127" r="5"></circle>
+              <circle class="point" cx="541" cy="98" r="5"></circle>
+              <circle class="interrupted" cx="617" cy="178" r="6"></circle>
+              <line x1="612" y1="173" x2="622" y2="183" stroke="var(--amber)" stroke-width="2"></line>
+              <line x1="622" y1="173" x2="612" y2="183" stroke="var(--amber)" stroke-width="2"></line>
+              <circle class="point" cx="693" cy="94" r="5"></circle>
+              <circle class="point" cx="845" cy="85" r="5"></circle>
+              <circle class="point" cx="966" cy="85" r="5"></circle>
+
+              <text class="chart-note" x="586" y="198">116 · did not finish</text>
+
+              <text class="axis-label" text-anchor="middle" x="85" y="229">112</text>
+              <text class="axis-label" text-anchor="middle" x="237" y="229">113</text>
+              <text class="axis-label" text-anchor="middle" x="389" y="229">114</text>
+              <text class="axis-label" text-anchor="middle" x="541" y="229">115</text>
+              <text class="axis-label" text-anchor="middle" x="617" y="229">116</text>
+              <text class="axis-label" text-anchor="middle" x="693" y="229">117</text>
+              <text class="axis-label" text-anchor="middle" x="845" y="229">118</text>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <div class="lower-grid">
+        <section class="section">
+          <div class="section-title">
+            <h2>Recent runs</h2>
+            <div class="section-meta">Click a run to inspect failure attribution</div>
+          </div>
+          <div class="card table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 15%;">Run ID</th>
+                  <th style="width: 10%;">Build</th>
+                  <th style="width: 22%;">Dataset</th>
+                  <th style="width: 15%;">Run type</th>
+                  <th style="width: 14%;">Owner</th>
+                  <th style="width: 13%;">Status</th>
+                  <th style="width: 11%;">Covered</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="active" data-run="r-2048" data-total="18" data-retrieval="6" data-chunking="4" data-prompt="5" data-model="3">
+                  <td>r-2048</td><td>118</td><td>Support FAQ ru</td><td>Full suite</td><td>Irina S.</td><td><span class="status">Completed</span></td><td>82 / 100</td>
+                </tr>
+                <tr data-run="r-2047" data-total="12" data-retrieval="2" data-chunking="3" data-prompt="4" data-model="3">
+                  <td>r-2047</td><td>118</td><td>Support FAQ ru</td><td>Policy</td><td>Maxim K.</td><td><span class="status review">Review</span></td><td>28 / 30</td>
+                </tr>
+                <tr data-run="r-2046" data-total="15" data-retrieval="7" data-chunking="2" data-prompt="3" data-model="3">
+                  <td>r-2046</td><td>117</td><td>Support FAQ ru</td><td>Full suite</td><td>Irina S.</td><td><span class="status">Completed</span></td><td>91 / 100</td>
+                </tr>
+                <tr data-run="r-2045" data-total="9" data-retrieval="1" data-chunking="3" data-prompt="2" data-model="3">
+                  <td>r-2045</td><td>117</td><td>Support FAQ ru</td><td>Adversarial</td><td>Oleg V.</td><td><span class="status">Completed</span></td><td>46 / 50</td>
+                </tr>
+                <tr data-run="r-2044" data-total="21" data-retrieval="9" data-chunking="5" data-prompt="4" data-model="3">
+                  <td>r-2044</td><td>116</td><td>Support FAQ ru</td><td>Full suite</td><td>Irina S.</td><td><span class="status failed">Did not finish</span></td><td>—</td>
+                </tr>
+                <tr data-run="r-2043" data-total="14" data-retrieval="4" data-chunking="4" data-prompt="3" data-model="3">
+                  <td>r-2043</td><td>115</td><td>Support FAQ ru</td><td>Full suite</td><td>Maxim K.</td><td><span class="status">Completed</span></td><td>86 / 100</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>Failure attribution</h2>
+            <div class="section-meta">Selected run</div>
+          </div>
+          <div class="card attribution-card">
+            <div class="attribution-header">
+              <div>
+                <h2 id="selectedRun">r-2048</h2>
+                <div class="attribution-run">Failures owned by layer</div>
+              </div>
+              <div class="failure-total"><span id="failureCount">18</span><span>failures</span></div>
+            </div>
+            <div class="bars">
+              <div class="bar-row">
+                <div class="bar-label">retrieval</div>
+                <div class="bar-track"><div class="bar-fill" id="retrievalBar" style="--width: 33.3%;"></div></div>
+                <div class="bar-number" id="retrievalNum">6</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">chunking</div>
+                <div class="bar-track"><div class="bar-fill" id="chunkingBar" style="--width: 22.2%;"></div></div>
+                <div class="bar-number" id="chunkingNum">4</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">prompt</div>
+                <div class="bar-track"><div class="bar-fill" id="promptBar" style="--width: 27.8%;"></div></div>
+                <div class="bar-number" id="promptNum">5</div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">model</div>
+                <div class="bar-track"><div class="bar-fill" id="modelBar" style="--width: 16.7%;"></div></div>
+                <div class="bar-number" id="modelNum">3</div>
+              </div>
+            </div>
+            <div class="attribution-foot">Attribution is based on the first owning layer for each failed question.</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const rows = document.querySelectorAll("tbody tr");
+    const keys = ["retrieval", "chunking", "prompt", "model"];
+
+    rows.forEach(row => {
+      row.addEventListener("click", () => {
+        rows.forEach(item => item.classList.remove("active"));
+        row.classList.add("active");
+
+        const total = Number(row.dataset.total);
+        document.getElementById("selectedRun").textContent = row.dataset.run;
+        document.getElementById("failureCount").textContent = total;
+
+        keys.forEach(key => {
+          const value = Number(row.dataset[key]);
+          document.getElementById(key + "Num").textContent = value;
+          document.getElementById(key + "Bar").style.setProperty("--width", ((value / total) * 100) + "%");
+        });
+      });
+    });
+  </script>
+</body>
+</html>

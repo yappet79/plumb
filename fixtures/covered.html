@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>fixture — covered</title>
+<!-- Second card painted over the paragraph of the first. -->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { width: 1200px; background: #F4F6F8;
+         font: 16px/1.4 Arial, sans-serif; color: #111827; }
+  .frame { position: relative; width: 1200px; height: 800px;
+           padding: 40px; overflow: hidden; background: #F4F6F8; }
+  .card { padding: 20px; background: #fff; border: 1px solid #E2E8F0; border-radius: 10px; }
+  .b { position: relative; width: 360px; padding: 14px; background: #fff; border: 1px solid #E2E8F0; }
+  .b2 { margin-top: -60px; margin-left: 60px; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="b"><h2>First block</h2><p>Text that is about to be covered up.</p></div>
+    <div class="b b2"><h2>Second block</h2><p>Text sitting on top of the first.</p></div>
+  </div>
+</body>
+</html>

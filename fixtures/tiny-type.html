@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>fixture — tiny-type</title>
+<!-- A 9px caption. Fires only when --min-font is passed. -->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { width: 1200px; background: #F4F6F8;
+         font: 16px/1.4 Arial, sans-serif; color: #111827; }
+  .frame { position: relative; width: 1200px; height: 800px;
+           padding: 40px; overflow: hidden; background: #F4F6F8; }
+  .card { padding: 20px; background: #fff; border: 1px solid #E2E8F0; border-radius: 10px; }
+  .caption { font-size: 9px; color: #6B7280; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="card">
+      <h2>Readable heading</h2>
+      <p class="caption">This caption is nine pixels tall and nobody will read it.</p>
+    </div>
+  </div>
+</body>
+</html>

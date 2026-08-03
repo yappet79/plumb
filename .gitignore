@@ -1,0 +1,21 @@
+.local.json
+*.local.json
+.local-keys.mjs
+node_modules/
+.build-*.mjs
+package-lock.json
+
+# Reference material belongs to whoever made it — never redistributed.
+references/*
+!references/README.md
+
+# Local work log — this machine only, never redistributed.
+.memory/
+
+# Bake-off output, if a run is pointed at the repo. .chrome-profile-* is a full browser
+# profile, cookies included — nothing that should ever be committed by accident.
+design-run/
+.chrome-profile-*/
+contact.html
+shot-*.png
+design-*.html

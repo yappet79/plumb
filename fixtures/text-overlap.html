@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>fixture — text-overlap</title>
+<!-- Two paragraphs, no backgrounds, pulled on top of each other. -->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { width: 1200px; background: #F4F6F8;
+         font: 16px/1.4 Arial, sans-serif; color: #111827; }
+  .frame { position: relative; width: 1200px; height: 800px;
+           padding: 40px; overflow: hidden; background: #F4F6F8; }
+  .card { padding: 20px; background: #fff; border: 1px solid #E2E8F0; border-radius: 10px; }
+  .t { width: 380px; padding: 0; margin: 0; }
+  .t2 { margin-top: -34px; margin-left: 70px; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="t">A line of running text that is about to be written over by another one.</p>
+    <p class="t t2">And the second line, landing directly on top of the first.</p>
+  </div>
+</body>
+</html>

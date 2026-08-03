@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>fixture — js-error</title>
+<!-- Throws on load. Layout is otherwise fine. -->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { width: 1200px; background: #F4F6F8;
+         font: 16px/1.4 Arial, sans-serif; color: #111827; }
+  .frame { position: relative; width: 1200px; height: 800px;
+           padding: 40px; overflow: hidden; background: #F4F6F8; }
+  .card { padding: 20px; background: #fff; border: 1px solid #E2E8F0; border-radius: 10px; }
+  .card { width: 420px; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="card"><h2>Looks fine</h2><p>And throws.</p></div>
+    <script>window.addEventListener('load', function () { null.f(); });</script>
+  </div>
+</body>
+</html>

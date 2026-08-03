@@ -1,0 +1,94 @@
+{
+  "_": "Palettes with verified contrast. 4-6 tokens per theme - more competes for attention, fewer is not enough. Check: node scripts/theme.mjs --check",
+  "_fonts": "display+body pairs. Not Inter: it sits in the list of tells for generated work (web-artifacts-builder), and that is fair - it has been used for everything.",
+  "swiss": {
+    "about": "Light minimalism, one red accent, dense grid. Default for decks and reports.",
+    "fonts": {
+      "display": "Space Grotesk",
+      "body": "IBM Plex Sans"
+    },
+    "tokens": {
+      "bg": "#FFFFFF",
+      "panel": "#F6F6F4",
+      "ink": "#141414",
+      "ink-soft": "#5A5A5A",
+      "line": "#DEDEDA",
+      "accent": "#D8232A"
+    }
+  },
+  "editorial": {
+    "about": "Paper and serious text: serif in headings, grotesque in the body. For long reads and case studies.",
+    "fonts": {
+      "display": "Fraunces",
+      "body": "Public Sans"
+    },
+    "tokens": {
+      "bg": "#FBFAF7",
+      "panel": "#F2EFE9",
+      "ink": "#1C1A17",
+      "ink-soft": "#57534C",
+      "line": "#DDD8CE",
+      "accent": "#1B5E4B"
+    }
+  },
+  "product": {
+    "about": "Product interface: neutral grey scale, one blue for actions and states.",
+    "fonts": {
+      "display": "Manrope",
+      "body": "Manrope"
+    },
+    "tokens": {
+      "bg": "#FFFFFF",
+      "panel": "#F7F8FA",
+      "ink": "#111827",
+      "ink-soft": "#4B5563",
+      "line": "#E3E6EB",
+      "accent": "#1D4ED8"
+    }
+  },
+  "violet": {
+    "about": "Corporate violet on white. For material that has to wear an organisation's identity rather than a decorative palette — substitute your own hex values.",
+    "fonts": {
+      "display": "Poppins",
+      "body": "Poppins"
+    },
+    "tokens": {
+      "bg": "#FFFFFF",
+      "panel": "#F5F4FB",
+      "ink": "#16151C",
+      "ink-soft": "#565364",
+      "line": "#E2E0EF",
+      "accent": "#5B47D6"
+    }
+  },
+  "stone": {
+    "about": "Muted stone and conifer. Calm, without a single bright spot - for long documents.",
+    "fonts": {
+      "display": "Bricolage Grotesque",
+      "body": "Source Sans 3"
+    },
+    "tokens": {
+      "bg": "#FAFAF9",
+      "panel": "#F0EFEC",
+      "ink": "#1A1A18",
+      "ink-soft": "#55534E",
+      "line": "#DCDAD4",
+      "accent": "#3F6212"
+    }
+  },
+  "night": {
+    "about": "Dark but not neon: cold graphite, one cold accent. For a demo in a dark room.",
+    "fonts": {
+      "display": "Space Grotesk",
+      "body": "IBM Plex Sans"
+    },
+    "tokens": {
+      "bg": "#111315",
+      "panel": "#1A1D21",
+      "ink": "#F2F4F5",
+      "ink-soft": "#A8AEB4",
+      "line": "#2C3136",
+      "accent": "#4DD4C0"
+    }
+  }
+}

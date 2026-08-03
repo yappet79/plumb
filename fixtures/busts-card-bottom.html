@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>fixture — busts-card-bottom</title>
+<!-- Card is 120px tall and holds 320px of text. -->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { width: 1200px; background: #F4F6F8;
+         font: 16px/1.4 Arial, sans-serif; color: #111827; }
+  .frame { position: relative; width: 1200px; height: 800px;
+           padding: 40px; overflow: hidden; background: #F4F6F8; }
+  .card { padding: 20px; background: #fff; border: 1px solid #E2E8F0; border-radius: 10px; }
+  .card { height: 120px; }
+  .card p { margin: 0 0 14px; }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="card">
+      <h2>Fixed height</h2>
+      <p>One line of text.</p><p>Two lines of text.</p><p>Three lines of text.</p>
+      <p>Four lines of text.</p><p>Five lines of text — this one is below the border.</p>
+    </div>
+  </div>
+</body>
+</html>

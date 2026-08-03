@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas Support Bot — Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple: #7865f2;
+      --purple-deep: #6c58ed;
+      --purple-tab: #8d79f2;
+      --row-active: #ece9fc;
+      --green: #00ba85;
+      --red: #c63c3c;
+      --amber: #f1ac2b;
+      --ink: #292d34;
+      --ink-soft: #656f7d;
+      --ink-faint: #767c86;
+      --line: #e6e6ea;
+      --bg: #fbfbfb;
+      --panel: #ffffff;
+      --panel-2: #f4f4f6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: "Inter", sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    button:focus-visible,
+    select:focus-visible,
+    tr:focus-visible {
+      outline: 2px solid var(--purple);
+      outline-offset: 2px;
+    }
+
+    .tabular {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .app-header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 0 28px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 10px;
+      min-width: 194px;
+    }
+
+    .brand-mark {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      border: 6px solid var(--purple);
+      border-radius: 8px;
+    }
+
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      right: -6px;
+      bottom: -6px;
+      width: 7px;
+      height: 7px;
+      border-radius: 3px;
+      background: var(--green);
+      border: 2px solid var(--panel);
+    }
+
+    .brand-name {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .header-context {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .context-block {
+      display: grid;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .context-label {
+      color: var(--ink-soft);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .system-name {
+      overflow: hidden;
+      font-weight: 600;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dataset-select {
+      min-width: 164px;
+      height: 34px;
+      padding: 0 34px 0 11px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background-color: var(--panel);
+      cursor: pointer;
+    }
+
+    .build-label {
+      margin-left: auto;
+      padding: 6px 10px;
+      color: var(--ink-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr);
+      min-height: calc(100vh - 64px);
+    }
+
+    .sidebar {
+      padding: 22px 14px;
+      border-right: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .nav-label {
+      margin: 0 10px 8px;
+      color: var(--ink-soft);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 4px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 38px;
+      padding: 0 10px;
+      color: var(--ink-soft);
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .nav-item.active {
+      color: var(--ink);
+      background: var(--row-active);
+    }
+
+    .nav-icon {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.6;
+    }
+
+    main {
+      min-width: 0;
+      padding: 28px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .page-subtitle {
+      margin-top: 5px;
+      color: var(--ink-soft);
+      font-size: 13px;
+    }
+
+    .scope-note {
+      color: var(--ink-soft);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric-card {
+      display: flex;
+      align-items: center;
+      min-height: 142px;
+      gap: 16px;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 2px 8px rgba(41, 45, 52, 0.04);
+    }
+
+    .ring {
+      width: 84px;
+      height: 84px;
+      flex: 0 0 84px;
+    }
+
+    .ring-track {
+      fill: none;
+      stroke: var(--panel-2);
+      stroke-width: 8;
+    }
+
+    .ring-value {
+      fill: none;
+      stroke: var(--purple);
+      stroke-linecap: round;
+      stroke-width: 8;
+      transform: rotate(-90deg);
+      transform-origin: 42px 42px;
+    }
+
+    .ring-value.amber {
+      stroke: var(--amber);
+    }
+
+    .ring-value.green {
+      stroke: var(--green);
+    }
+
+    .ring-locked {
+      fill: none;
+      stroke: var(--line);
+      stroke-dasharray: 5 5;
+      stroke-width: 8;
+    }
+
+    .ring-number {
+      fill: var(--ink);
+      font-family: "Inter", sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      text-anchor: middle;
+      dominant-baseline: central;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ring-number.dash {
+      font-size: 24px;
+      font-weight: 400;
+    }
+
+    .metric-copy {
+      min-width: 0;
+    }
+
+    .metric-label {
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    .metric-note {
+      color: var(--ink-soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .metric-state {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .state-mark {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+
+    .metric-state.neutral .state-mark {
+      background: var(--ink-faint);
+    }
+
+    .provisional-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 12px 0 18px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--amber);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .notice-icon {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      margin-top: 1px;
+      fill: none;
+      stroke: var(--amber);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.8;
+    }
+
+    .notice-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .notice-copy {
+      margin-top: 2px;
+      color: var(--ink-soft);
+      font-size: 12px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(310px, 0.75fr);
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .panel {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: 0 2px 8px rgba(41, 45, 52, 0.04);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      min-height: 60px;
+      gap: 20px;
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-subtitle {
+      margin-top: 3px;
+      color: var(--ink-soft);
+      font-size: 12px;
+    }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--ink-soft);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-line {
+      width: 17px;
+      border-top: 2px solid var(--purple);
+    }
+
+    .legend-line.target {
+      border-top-color: var(--green);
+      border-top-style: dashed;
+    }
+
+    .chart-wrap {
+      padding: 10px 14px 8px 8px;
+    }
+
+    .chart {
+      display: block;
+      width: 100%;
+      height: 244px;
+      overflow: visible;
+    }
+
+    .chart-grid {
+      stroke: var(--line);
+      stroke-width: 1;
+    }
+
+    .chart-axis-text {
+      fill: var(--ink-soft);
+      font-family: "Inter", sans-serif;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .chart-target {
+      fill: none;
+      stroke: var(--green);
+      stroke-dasharray: 5 5;
+      stroke-width: 1.5;
+    }
+
+    .chart-trend {
+      fill: none;
+      stroke: var(--purple);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 2.5;
+    }
+
+    .chart-point {
+      fill: var(--panel);
+      stroke: var(--purple);
+      stroke-width: 2.5;
+    }
+
+    .chart-point.current {
+      fill: var(--purple);
+    }
+
+    .interrupted-stem {
+      stroke: var(--red);
+      stroke-dasharray: 3 4;
+      stroke-width: 1.5;
+    }
+
+    .interrupted-mark {
+      fill: var(--panel);
+      stroke: var(--red);
+      stroke-width: 2;
+    }
+
+    .interrupted-slash {
+      stroke: var(--red);
+      stroke-linecap: round;
+      stroke-width: 2;
+    }
+
+    .chart-caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 18px 14px;
+      color: var(--ink-soft);
+      font-size: 11px;
+    }
+
+    .attribution-body {
+      padding: 16px 18px 18px;
+    }
+
+    .selected-run {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .selected-id {
+      font-weight: 600;
+    }
+
+    .failure-total {
+      color: var(--ink-soft);
+      font-size: 12px;
+    }
+
+    .bars {
+      display: grid;
+      gap: 16px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr) 28px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bar-label {
+      color: var(--ink-soft);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .bar-track {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: var(--panel-2);
+    }
+
+    .bar-fill {
+      width: 0;
+      height: 100%;
+      border-radius: 8px;
+      background: var(--purple);
+      transition: width 180ms ease;
+    }
+
+    .bar-row:nth-child(2) .bar-fill {
+      background: var(--purple-tab);
+    }
+
+    .bar-row:nth-child(3) .bar-fill {
+      background: var(--amber);
+    }
+
+    .bar-row:nth-child(4) .bar-fill {
+      background: var(--red);
+    }
+
+    .bar-value {
+      text-align: right;
+      font-size: 12px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .attribution-footnote {
+      margin-top: 20px;
+      padding-top: 13px;
+      color: var(--ink-soft);
+      border-top: 1px solid var(--line);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .table-panel {
+      overflow: hidden;
+    }
+
+    .table-meta {
+      color: var(--ink-soft);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 920px;
+      border-collapse: collapse;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    th,
+    td {
+      height: 48px;
+      padding: 0 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    th {
+      height: 38px;
+      color: var(--ink-soft);
+      background: var(--panel-2);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.025em;
+      text-transform: uppercase;
+    }
+
+    tbody tr {
+      cursor: pointer;
+    }
+
+    tbody tr:hover {
+      background: var(--panel-2);
+    }
+
+    tbody tr.selected {
+      background: var(--row-active);
+      box-shadow: inset 3px 0 0 var(--purple);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .run-id {
+      font-weight: 600;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--ink-soft);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .status.interrupted .status-dot {
+      background: var(--red);
+    }
+
+    .status.review .status-dot {
+      background: var(--amber);
+    }
+
+    .covered {
+      text-align: right;
+    }
+
+    th.covered {
+      text-align: right;
+    }
+
+    .coverage-main {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .coverage-percent {
+      margin-left: 6px;
+      color: var(--ink-soft);
+    }
+
+    .dash-value {
+      color: var(--ink-faint);
+    }
+
+    @media (max-width: 1180px) {
+      .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .app-header {
+        height: auto;
+        min-height: 64px;
+        flex-wrap: wrap;
+        gap: 12px 20px;
+        padding: 12px 18px;
+      }
+
+      .brand {
+        min-width: auto;
+      }
+
+      .header-context {
+        order: 2;
+        width: 100%;
+      }
+
+      .build-label {
+        margin-left: 0;
+      }
+
+      .app-shell {
+        display: block;
+      }
+
+      .sidebar {
+        padding: 8px 14px;
+        overflow-x: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .nav-label {
+        display: none;
+      }
+
+      .nav-list {
+        display: flex;
+      }
+
+      .nav-item {
+        white-space: nowrap;
+      }
+
+      main {
+        padding: 20px 16px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .header-context {
+        align-items: flex-end;
+        gap: 12px;
+      }
+
+      .header-context .context-block:first-child {
+        flex: 1;
+      }
+
+      .dataset-select {
+        min-width: 148px;
+      }
+
+      .page-heading {
+        display: block;
+      }
+
+      .scope-note {
+        margin-top: 8px;
+        white-space: normal;
+      }
+
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .panel-header {
+        display: block;
+      }
+
+      .legend {
+        margin-top: 10px;
+      }
+
+      .chart-caption {
+        display: block;
+      }
+
+      .chart-caption span {
+        display: block;
+        margin-top: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand" aria-label="Evaluation workspace">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Evaluate</span>
+    </div>
+
+    <div class="header-context">
+      <div class="context-block">
+        <span class="context-label">Evaluated system</span>
+        <span class="system-name">Atlas Support Bot</span>
+      </div>
+
+      <div class="context-block">
+        <label class="context-label" for="dataset">Dataset</label>
+        <select class="dataset-select" id="dataset" aria-label="Dataset">
+          <option selected>Support FAQ ru</option>
+          <option>Support FAQ en</option>
+          <option>Escalations ru</option>
+        </select>
+      </div>
+    </div>
+
+    <span class="build-label tabular">build 118</span>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <p class="nav-label">Workspace</p>
+      <nav aria-label="Primary">
+        <ul class="nav-list">
+          <li>
+            <div class="nav-item active" aria-current="page">
+              <svg class="nav-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <rect x="3" y="3" width="5" height="5" rx="1"></rect>
+                <rect x="12" y="3" width="5" height="5" rx="1"></rect>
+                <rect x="3" y="12" width="5" height="5" rx="1"></rect>
+                <rect x="12" y="12" width="5" height="5" rx="1"></rect>
+              </svg>
+              Overview
+            </div>
+          </li>
+          <li>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 4.5h12M4 10h12M4 15.5h12"></path>
+                <circle cx="6" cy="4.5" r="1"></circle>
+                <circle cx="14" cy="10" r="1"></circle>
+                <circle cx="8" cy="15.5" r="1"></circle>
+              </svg>
+              Runs
+            </div>
+          </li>
+          <li>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <ellipse cx="10" cy="5" rx="6" ry="2.5"></ellipse>
+                <path d="M4 5v5c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10v5c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-5"></path>
+              </svg>
+              Datasets
+            </div>
+          </li>
+          <li>
+            <div class="nav-item">
+              <svg class="nav-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M10 3v14M3 10h14"></path>
+                <circle cx="10" cy="10" r="7"></circle>
+              </svg>
+              Evaluators
+            </div>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="page">
+        <div class="page-heading">
+          <div>
+            <h1>Overview</h1>
+            <p class="page-subtitle">Latest evaluation results for Atlas Support Bot on Support FAQ ru.</p>
+          </div>
+          <p class="scope-note">Current completed run <span class="tabular">#8842</span> · build <span class="tabular">118</span></p>
+        </div>
+
+        <section class="metric-grid" aria-label="Evaluation metrics">
+          <article class="metric-card">
+            <svg class="ring" viewBox="0 0 84 84" role="img" aria-label="Coverage 82 percent">
+              <circle class="ring-track" cx="42" cy="42" r="34"></circle>
+              <circle class="ring-value amber" cx="42" cy="42" r="34" pathLength="100" stroke-dasharray="82 18"></circle>
+              <text class="ring-number" x="42" y="42">82%</text>
+            </svg>
+            <div class="metric-copy">
+              <p class="metric-label">Coverage</p>
+              <p class="metric-note"><span class="tabular">41 / 50</span> questions received a reply.</p>
+              <span class="metric-state"><span class="state-mark"></span>Provisional</span>
+            </div>
+          </article>
+
+          <article class="metric-card">
+            <svg class="ring" viewBox="0 0 84 84" role="img" aria-label="Policy accuracy 2.4 out of 3">
+              <circle class="ring-track" cx="42" cy="42" r="34"></circle>
+              <circle class="ring-value" cx="42" cy="42" r="34" pathLength="100" stroke-dasharray="80 20"></circle>
+              <text class="ring-number" x="42" y="42">2.4/3</text>
+            </svg>
+            <div class="metric-copy">
+              <p class="metric-label">Policy Accuracy</p>
+              <p class="metric-note">Score is provisional. Delta withheld.</p>
+              <span class="metric-state"><span class="state-mark"></span>Provisional</span>
+            </div>
+          </article>
+
+          <article class="metric-card">
+            <svg class="ring" viewBox="0 0 84 84" role="img" aria-label="95th percentile latency 41 seconds">
+              <circle class="ring-track" cx="42" cy="42" r="34"></circle>
+              <circle class="ring-value green" cx="42" cy="42" r="34" pathLength="100" stroke-dasharray="68 32"></circle>
+              <text class="ring-number" x="42" y="42">41s</text>
+            </svg>
+            <div class="metric-copy">
+              <p class="metric-label">p95 Latency</p>
+              <p class="metric-note">Within the <span class="tabular">60s</span> evaluation limit.</p>
+              <span class="metric-state neutral"><span class="state-mark"></span>Measured</span>
+            </div>
+          </article>
+
+          <article class="metric-card">
+            <svg class="ring" viewBox="0 0 84 84" role="img" aria-label="Injection resistance not exposed at this access level">
+              <circle class="ring-locked" cx="42" cy="42" r="34"></circle>
+              <text class="ring-number dash" x="42" y="40">—</text>
+            </svg>
+            <div class="metric-copy">
+              <p class="metric-label">Injection Resistance</p>
+              <p class="metric-note">Not exposed at this access level.</p>
+              <span class="metric-state neutral"><span class="state-mark"></span>Absent</span>
+            </div>
+          </article>
+        </section>
+
+        <aside class="provisional-notice" aria-label="Provisional score notice">
+          <svg class="notice-icon" viewBox="0 0 20 20" aria-hidden="true">
+            <circle cx="10" cy="10" r="7.5"></circle>
+            <path d="M10 6.5v4.5M10 14h.01"></path>
+          </svg>
+          <div>
+            <p class="notice-title">Scores are provisional · delta withheld</p>
+            <p class="notice-copy">Coverage is <span class="tabular">82%</span>, below the required <span class="tabular">98%</span> threshold. <span class="tabular">9</span> questions received no reply, so score deltas are not reported.</p>
+          </div>
+        </aside>
+
+        <div class="dashboard-grid">
+          <section class="panel" aria-labelledby="trajectory-title">
+            <header class="panel-header">
+              <div>
+                <h2 id="trajectory-title">Quality trajectory</h2>
+                <p class="panel-subtitle">Policy accuracy by build sequence, never calendar time.</p>
+              </div>
+              <div class="legend" aria-label="Chart legend">
+                <span class="legend-item"><span class="legend-line"></span>Score</span>
+                <span class="legend-item"><span class="legend-line target"></span>Target 2.7</span>
+              </div>
+            </header>
+
+            <div class="chart-wrap">
+              <svg class="chart" viewBox="0 0 760 244" role="img" aria-labelledby="chart-title chart-description">
+                <title id="chart-title">Policy accuracy over builds 112 through 118</title>
+                <desc id="chart-description">Build 116 was interrupted and is excluded from the trend. The current build 118 scored 2.4 against a target of 2.7.</desc>
+
+                <line class="chart-grid" x1="58" y1="28" x2="735" y2="28"></line>
+                <line class="chart-grid" x1="58" y1="76" x2="735" y2="76"></line>
+                <line class="chart-grid" x1="58" y1="124" x2="735" y2="124"></line>
+                <line class="chart-grid" x1="58" y1="172" x2="735" y2="172"></line>
+
+                <text class="chart-axis-text" x="47" y="32" text-anchor="end">3.0</text>
+                <text class="chart-axis-text" x="47" y="80" text-anchor="end">2.5</text>
+                <text class="chart-axis-text" x="47" y="128" text-anchor="end">2.0</text>
+                <text class="chart-axis-text" x="47" y="176" text-anchor="end">1.5</text>
+
+                <line class="chart-target" x1="58" y1="57" x2="735" y2="57"></line>
+                <text class="chart-axis-text" x="729" y="49" text-anchor="end">target 2.7</text>
+
+                <path class="chart-trend" d="M74 114 L182 100 L290 89 L398 76 L614 66 L722 86"></path>
+
+                <circle class="chart-point" cx="74" cy="114" r="4.5">
+                  <title>Build 112: 2.1</title>
+                </circle>
+                <circle class="chart-point" cx="182" cy="100" r="4.5">
+                  <title>Build 113: 2.25</title>
+                </circle>
+                <circle class="chart-point" cx="290" cy="89" r="4.5">
+                  <title>Build 114: 2.36</title>
+                </circle>
+                <circle class="chart-point" cx="398" cy="76" r="4.5">
+                  <title>Build 115: 2.5</title>
+                </circle>
+
+                <line class="interrupted-stem" x1="506" y1="73" x2="506" y2="172"></line>
+                <circle class="interrupted-mark" cx="506" cy="106" r="7">
+                  <title>Build 116: interrupted, excluded from trend</title>
+                </circle>
+                <line class="interrupted-slash" x1="501" y1="111" x2="511" y2="101"></line>
+
+                <circle class="chart-point" cx="614" cy="66" r="4.5">
+                  <title>Build 117: 2.6</title>
+                </circle>
+                <circle class="chart-point current" cx="722" cy="86" r="5.5">
+                  <title>Build 118: 2.4</title>
+                </circle>
+
+                <text class="chart-axis-text" x="74" y="206" text-anchor="middle">112</text>
+                <text class="chart-axis-text" x="182" y="206" text-anchor="middle">113</text>
+                <text class="chart-axis-text" x="290" y="206" text-anchor="middle">114</text>
+                <text class="chart-axis-text" x="398" y="206" text-anchor="middle">115</text>
+                <text class="chart-axis-text" x="506" y="206" text-anchor="middle">116</text>
+                <text class="chart-axis-text" x="614" y="206" text-anchor="middle">117</text>
+                <text class="chart-axis-text" x="722" y="206" text-anchor="middle">118</text>
+                <text class="chart-axis-text" x="396" y="232" text-anchor="middle">Build sequence</text>
+              </svg>
+            </div>
+
+            <div class="chart-caption">
+              <span>One point per build sequence.</span>
+              <span>Build <span class="tabular">116</span> was interrupted and excluded from the trend.</span>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="attribution-title">
+            <header class="panel-header">
+              <div>
+                <h2 id="attribution-title">Failure attribution</h2>
+                <p class="panel-subtitle">Layer owning each failure.</p>
+              </div>
+            </header>
+
+            <div class="attribution-body">
+              <div class="selected-run">
+                <span class="selected-id tabular" id="selectedRun">Run #8842</span>
+                <span class="failure-total"><span id="failureTotal" class="tabular">9</span> attributed</span>
+              </div>
+
+              <div class="bars" id="attributionBars">
+                <div class="bar-row">
+                  <span class="bar-label">Retrieval</span>
+                  <div class="bar-track"><div class="bar-fill" data-layer="retrieval"></div></div>
+                  <span class="bar-value" data-value="retrieval">4</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">Chunking</span>
+                  <div class="bar-track"><div class="bar-fill" data-layer="chunking"></div></div>
+                  <span class="bar-value" data-value="chunking">2</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">Prompt</span>
+                  <div class="bar-track"><div class="bar-fill" data-layer="prompt"></div></div>
+                  <span class="bar-value" data-value="prompt">2</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-label">Model</span>
+                  <div class="bar-track"><div class="bar-fill" data-layer="model"></div></div>
+                  <span class="bar-value" data-value="model">1</span>
+                </div>
+              </div>
+
+              <p class="attribution-footnote">Select a completed run below to replace this breakdown. Counts reflect the final owning layer after review.</p>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel table-panel" aria-labelledby="runs-title">
+          <header class="panel-header">
+            <div>
+              <h2 id="runs-title">Recent runs</h2>
+              <p class="panel-subtitle">Select a row to inspect its failure attribution.</p>
+            </div>
+            <span class="table-meta">6 runs</span>
+          </header>
+
+          <div class="table-scroll">
+            <table aria-label="Recent evaluation runs">
+              <thead>
+                <tr>
+                  <th scope="col">Run ID</th>
+                  <th scope="col">Build</th>
+                  <th scope="col">Dataset</th>
+                  <th scope="col">Run type</th>
+                  <th scope="col">Owner</th>
+                  <th scope="col">Status</th>
+                  <th scope="col" class="covered">Covered questions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr tabindex="0" class="selected" aria-selected="true" data-run="8842" data-values="4,2,2,1">
+                  <td class="run-id">#8842</td>
+                  <td>118</td>
+                  <td>Support FAQ ru</td>
+                  <td>Full benchmark</td>
+                  <td>Elena K.</td>
+                  <td><span class="status"><span class="status-dot"></span>Complete</span></td>
+                  <td class="covered"><span class="coverage-main">41 / 50</span><span class="coverage-percent">82%</span></td>
+                </tr>
+                <tr tabindex="0" aria-selected="false" data-run="8836" data-values="1,0,1,0">
+                  <td class="run-id">#8836</td>
+                  <td>117</td>
+                  <td>Support FAQ ru</td>
+                  <td>Full benchmark</td>
+                  <td>Mikhail P.</td>
+                  <td><span class="status"><span class="status-dot"></span>Complete</span></td>
+                  <td class="covered"><span class="coverage-main">48 / 50</span><span class="coverage-percent">96%</span></td>
+                </tr>
+                <tr tabindex="0" aria-selected="false" data-run="8829" data-values="0,0,0,0" data-unfinished="true">
+                  <td class="run-id">#8829</td>
+                  <td>116</td>
+                  <td>Support FAQ ru</td>
+                  <td>Full benchmark</td>
+                  <td>Elena K.</td>
+                  <td><span class="status interrupted"><span class="status-dot"></span>Interrupted</span></td>
+                  <td class="covered"><span class="dash-value">—</span></td>
+                </tr>
+                <tr tabindex="0" aria-selected="false" data-run="8822" data-values="1,1,0,0">
+                  <td class="run-id">#8822</td>
+                  <td>115</td>
+                  <td>Support FAQ ru</td>
+                  <td>Regression</td>
+                  <td>Sam Lee</td>
+                  <td><span class="status"><span class="status-dot"></span>Complete</span></td>
+                  <td class="covered"><span class="coverage-main">48 / 50</span><span class="coverage-percent">96%</span></td>
+                </tr>
+                <tr tabindex="0" aria-selected="false" data-run="8814" data-values="3,1,1,0">
+                  <td class="run-id">#8814</td>
+                  <td>114</td>
+                  <td>Support FAQ ru</td>
+                  <td>Full benchmark</td>
+                  <td>Mikhail P.</td>
+                  <td><span class="status review"><span class="status-dot"></span>Reviewed</span></td>
+                  <td class="covered"><span class="coverage-main">45 / 50</span><span class="coverage-percent">90%</span></td>
+                </tr>
+                <tr tabindex="0" aria-selected="false" data-run="8807" data-values="2,2,1,1">
+                  <td class="run-id">#8807</td>
+                  <td>113</td>
+                  <td>Support FAQ ru</td>
+                  <td>Regression</td>
+                  <td>Sam Lee</td>
+                  <td><span class="status"><span class="status-dot"></span>Complete</span></td>
+                  <td class="covered"><span class="coverage-main">44 / 50</span><span class="coverage-percent">88%</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const rows = Array.from(document.querySelectorAll("tbody tr"));
+      const layers = ["retrieval", "chunking", "prompt", "model"];
+      const selectedRun = document.getElementById("selectedRun");
+      const failureTotal = document.getElementById("failureTotal");
+      const footnote = document.querySelector(".attribution-footnote");
+
+      function selectRun(row) {
+        rows.forEach(item => {
+          item.classList.remove("selected");
+          item.setAttribute("aria-selected", "false");
+        });
+
+        row.classList.add("selected");
+        row.setAttribute("aria-selected", "true");
+
+        const values = row.dataset.values.split(",").map(Number);
+        const total = values.reduce((sum, value) => sum + value, 0);
+        const max = Math.max(...values, 1);
+
+        selectedRun.textContent = "Run #" + row.dataset.run;
+        failureTotal.textContent = total;
+
+        layers.forEach((layer, index) => {
+          const fill = document.querySelector('[data-layer="' + layer + '"]');
+          const value = document.querySelector('[data-value="' + layer + '"]');
+          fill.style.width = row.dataset.unfinished === "true" ? "0%" : ((values[index] / max) * 100) + "%";
+          value.textContent = row.dataset.unfinished === "true" ? "—" : values[index];
+        });
+
+        if (row.dataset.unfinished === "true") {
+          failureTotal.textContent = "—";
+          footnote.textContent = "This run did not finish. No failure attribution was produced, and build 116 is excluded from the quality trend.";
+        } else {
+          footnote.textContent = "Select a completed run below to replace this breakdown. Counts reflect the final owning layer after review.";
+        }
+      }
+
+      rows.forEach(row => {
+        row.addEventListener("click", () => selectRun(row));
+        row.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectRun(row);
+          }
+        });
+      });
+
+      selectRun(rows[0]);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!-- Editorial utility: a compact, evidence-first evaluation workspace where hierarchy is carried by type, hairlines, and defensible data rather than visual spectacle. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gauge — Support assistant weekly regression</title>
+<style>
+:root{
+  --purple:#7865f2;
+  --purple-deep:#6c58ed;
+  --row-active:#ece9fc;
+  --green:#00ba85;
+  --amber:#f1ac2b;
+  --red:#c63c3c;
+  --ink:#292d34;
+  --ink-soft:#656f7d;
+  --ink-faint:#767c86;
+  --line:#e6e6ea;
+  --bg:#fbfbfb;
+  --panel:#ffffff;
+}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;background:var(--bg)}
+body{
+  overflow:hidden;
+  color:var(--ink);
+  font-family:"Inter",Arial,sans-serif;
+  font-size:14px;
+  font-weight:400;
+  line-height:1.4;
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+button,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,select:focus-visible{outline:2px solid var(--purple);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+.app{display:grid;grid-template-columns:230px minmax(0,1fr);width:1600px;height:1100px}
+.sidebar{
+  display:flex;flex-direction:column;min-height:0;
+  padding:20px 14px 16px;background:var(--panel);border-right:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;min-height:43px;padding:0 8px 16px}
+.brand-symbol{
+  display:grid;place-items:center;width:29px;height:29px;flex:0 0 29px;
+  border:1.5px solid var(--purple);border-radius:8px;color:var(--purple);
+}
+.brand-symbol svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.brand-name{font-size:15px;font-weight:600;letter-spacing:-.02em}
+.brand-sub{margin-top:2px;color:var(--ink-faint);font-size:10px;font-weight:500;letter-spacing:.055em;text-transform:uppercase}
+.workspace{
+  margin:0 2px 15px;padding:10px 11px;border:1px solid var(--line);
+  border-radius:8px;background:color-mix(in srgb,var(--ink-faint) 8%,var(--panel));
+}
+.meta-label,.nav-label,.eyebrow,.column-note{
+  color:var(--ink-faint);font-size:10px;font-weight:500;letter-spacing:.065em;text-transform:uppercase;
+}
+.workspace-value{margin-top:3px;font-size:12px;font-weight:500}
+.nav-label{margin:10px 10px 6px}
+.nav-list{display:grid;gap:3px;margin:0;padding:0;list-style:none}
+.nav-item{
+  display:flex;align-items:center;gap:10px;min-height:37px;padding:0 10px;
+  color:var(--ink-soft);border-radius:8px;font-size:13px;font-weight:500;
+}
+.nav-item.active{color:var(--ink);background:var(--row-active)}
+.nav-icon{width:17px;height:17px;flex:0 0 17px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.sidebar-foot{margin-top:auto;padding:14px 2px 0;border-top:1px solid var(--line)}
+.user{display:flex;align-items:center;gap:10px;padding:9px;border:1px solid var(--line);border-radius:8px;background:color-mix(in srgb,var(--ink-faint) 8%,var(--panel))}
+.avatar{display:grid;place-items:center;width:31px;height:31px;flex:0 0 31px;border-radius:8px;background:var(--purple);color:var(--panel);font-size:11px;font-weight:600}
+.user-name{font-size:12px;font-weight:500}.user-role{margin-top:1px;color:var(--ink-faint);font-size:10px}
+.shell{display:grid;grid-template-rows:88px minmax(0,1fr);min-width:0}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 28px;
+  background:var(--panel);border-bottom:1px solid var(--line);
+}
+.eyebrow{margin-bottom:3px}
+h1{font-size:25px;font-weight:600;line-height:1.2;letter-spacing:-.025em}
+.run-context{display:flex;align-items:center;gap:16px;margin-left:auto;color:var(--ink-soft);font-size:12px;font-weight:300}
+.run-context strong{color:var(--ink);font-weight:500}
+.actions{display:flex;gap:9px;margin-left:8px}
+.btn{height:34px;padding:0 12px;border:1px solid var(--line);border-radius:7px;background:var(--panel);font-size:12px;font-weight:500}
+.btn.primary{border-color:var(--purple);background:var(--purple);color:var(--panel)}
+.content{min-height:0;padding:20px 28px 22px;overflow:hidden}
+.page{
+  display:grid;grid-template-rows:91px 51px minmax(0,1fr);gap:14px;
+  width:100%;height:100%;max-width:1480px;margin:auto;
+}
+.summary{
+  display:grid;grid-template-columns:1.08fr 1.1fr 1.08fr 1.12fr 280px;gap:0;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);overflow:hidden;
+}
+.metric{display:flex;flex-direction:column;justify-content:center;padding:0 17px;border-right:1px solid var(--line)}
+.metric-value{font-size:23px;font-weight:600;line-height:1.1;letter-spacing:-.025em}
+.metric-value .kappa{font-size:17px;font-weight:500}
+.metric-label{margin-top:5px;color:var(--ink-soft);font-size:12px;font-weight:300}
+.metric-label b{color:var(--ink);font-weight:500}
+.run-verdict{display:flex;align-items:center;padding:0 16px;color:var(--ink-soft);font-size:12px;line-height:1.45}
+.run-verdict b{color:var(--ink);font-weight:500}
+.filters{
+  display:flex;align-items:center;gap:9px;padding:8px 12px;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);
+}
+.filter-title{margin-right:3px;font-size:13px;font-weight:600}
+.filter-select{
+  height:31px;padding:0 28px 0 9px;border:1px solid var(--line);border-radius:6px;
+  background:var(--panel);font-size:12px;font-weight:500;
+}
+.changed-filter{
+  display:inline-flex;align-items:center;gap:7px;height:31px;padding:0 8px 0 9px;
+  color:var(--purple-deep);border:0;border-radius:6px;background:var(--row-active);font-size:12px;font-weight:500;
+}
+.clear-filter{padding:0;color:var(--purple-deep);border:0;background:transparent;font-size:12px;font-weight:500}
+.filter-count{margin-left:auto;color:var(--ink-faint);font-size:12px;font-weight:300}
+.main-grid{display:grid;grid-template-columns:minmax(0,1fr) 254px;gap:14px;min-height:0}
+.table-card{
+  min-width:0;min-height:0;border:1px solid var(--line);border-radius:8px;background:var(--panel);overflow:hidden;
+}
+.table-titlebar{
+  display:flex;align-items:center;justify-content:space-between;height:55px;padding:0 16px;border-bottom:1px solid var(--line);
+}
+.table-title{font-size:16px;font-weight:600;letter-spacing:-.015em}
+.table-note{margin-top:2px;color:var(--ink-soft);font-size:11px;font-weight:300}
+.table-wrap{height:calc(100% - 55px);overflow:hidden}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px}
+th{
+  height:34px;padding:0 9px;text-align:left;color:var(--ink-faint);
+  background:color-mix(in srgb,var(--ink-faint) 8%,var(--panel));
+  font-size:10px;font-weight:500;letter-spacing:.065em;text-transform:uppercase;
+}
+td{height:42px;padding:0 9px;border-bottom:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+tbody tr{cursor:pointer}
+tbody tr.open{background:var(--row-active)}
+tbody tr.open td:first-child{box-shadow:inset 3px 0 0 var(--purple)}
+.num{width:43px;color:var(--ink-soft);font-weight:500}
+.question{width:360px;font-weight:400}
+.score-col{width:54px}.delta-col{width:50px}.why-col{width:106px}.evidence-col{width:88px}.latency{width:70px;text-align:right}
+.score{
+  display:inline-grid;place-items:center;min-width:23px;height:22px;padding:1px 6px;border-radius:5px;font-size:12px;font-weight:600;
+}
+.score.s3{color:var(--green);background:color-mix(in srgb,var(--green) 10%,var(--panel))}
+.score.s2{color:var(--amber);background:color-mix(in srgb,var(--amber) 12%,var(--panel))}
+.score.s1,.score.s0{color:var(--red);background:color-mix(in srgb,var(--red) 10%,var(--panel))}
+.delta-neg{color:var(--red);font-weight:600}.delta-pos{color:var(--green);font-weight:600}.delta-eq{color:var(--ink-faint);font-weight:500}
+.tag{display:inline-flex;padding:2px 6px;border-radius:5px;font-size:11px;font-weight:500}
+.tag.retrieval{color:var(--purple-deep);background:var(--row-active)}
+.tag.prompt{color:var(--amber);background:color-mix(in srgb,var(--amber) 12%,var(--panel))}
+.tag.judge{color:var(--red);background:color-mix(in srgb,var(--red) 10%,var(--panel))}
+.dash{color:var(--ink-faint)}
+.evidence{color:var(--purple-deep);font-size:12px;font-weight:500;text-decoration:none}
+.expanded td{height:auto;padding:0;white-space:normal;overflow:visible}
+.evidence-panel{padding:12px 15px 13px;border-bottom:1px solid var(--line);background:var(--row-active)}
+.evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.evidence-box{padding:10px 11px;border:1px solid color-mix(in srgb,var(--purple) 18%,var(--panel));border-radius:6px;background:var(--panel)}
+.evidence-label{margin-bottom:5px;color:var(--ink-faint);font-size:10px;font-weight:500;letter-spacing:.055em;text-transform:uppercase}
+.evidence-box p{font-size:12px;line-height:1.45}
+.rubric-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding-top:9px;border-top:1px solid color-mix(in srgb,var(--purple) 18%,var(--panel))}
+.rubric-copy{font-size:12px}.rubric-copy b{font-weight:600}
+.disagree{padding:0;color:var(--purple-deep);border:0;background:transparent;font-size:11px;font-weight:500;white-space:nowrap}
+.side-stack{display:grid;grid-template-rows:192px minmax(0,1fr);gap:14px;min-height:0}
+.side-card{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:15px}
+.side-card h2{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.side-card p{margin-top:4px;color:var(--ink-soft);font-size:11px;font-weight:300;line-height:1.45}
+.empty-state{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-height:120px;padding:14px;border-top:1px solid var(--line);margin-top:12px}
+.mascot{width:31px;height:31px;margin-bottom:8px;color:var(--purple)}
+.mascot svg{display:block;width:31px;height:31px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.empty-state strong{font-size:12px;font-weight:600}.empty-state span{margin-top:3px;color:var(--ink-soft);font-size:11px;font-weight:300}
+.legend-list{display:grid;gap:12px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.legend-row{display:flex;align-items:flex-start;gap:8px;color:var(--ink-soft);font-size:11px;line-height:1.4}
+.legend-row b{display:block;color:var(--ink);font-weight:500}
+.dot{width:6px;height:6px;flex:0 0 6px;margin-top:5px;border-radius:50%;background:var(--purple)}
+.dot.amber{background:var(--amber)}.dot.red{background:var(--red)}
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-symbol" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M5 8.5h14v7A3.5 3.5 0 0 1 15.5 19h-7A3.5 3.5 0 0 1 5 15.5v-7Z"/><path d="M12 5V2.5M12 2.5l3 1.5-3 1.5"/><path d="M9 13h.01M15 13h.01"/></svg>
+      </div>
+      <div><div class="brand-name">Gauge</div><div class="brand-sub">evaluation console</div></div>
+    </div>
+
+    <div class="workspace">
+      <div class="meta-label">Workspace</div>
+      <div class="workspace-value">Northwind Support</div>
+    </div>
+
+    <div class="nav-label">Evaluate</div>
+    <nav aria-label="Primary navigation">
+      <ul class="nav-list">
+        <li><div class="nav-item active"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Runs</div></li>
+        <li><div class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="7" ry="2.5"/><path d="M5 5.5v6c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-6M5 11.5v6C5 18.9 8.1 20 12 20s7-1.1 7-2.5v-6"/></svg>Datasets</div></li>
+        <li><div class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M7 4h10M7 10h10M7 16h10M4 4h.01M4 10h.01M4 16h.01"/></svg>Rubrics</div></li>
+        <li><div class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M5 19V9M12 19V5M19 19v-7"/><path d="M3 19h18"/></svg>Baselines</div></li>
+        <li><div class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 3 4.5 7v5c0 4.5 3.2 7.6 7.5 9 4.3-1.4 7.5-4.5 7.5-9V7L12 3Z"/><path d="m9 12 2 2 4-4"/></svg>Judges</div></li>
+      </ul>
+    </nav>
+
+    <div class="nav-label">Workspace</div>
+    <nav aria-label="Workspace settings">
+      <ul class="nav-list">
+        <li><div class="nav-item"><svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/></svg>Settings</div></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="user"><div class="avatar">DT</div><div><div class="user-name">Danylo T.</div><div class="user-role">Evaluation lead</div></div></div>
+    </div>
+  </aside>
+
+  <div class="shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Runs / R-284</div>
+        <h1>Support assistant · weekly regression</h1>
+      </div>
+      <div class="run-context">
+        <span><strong>gpt-4.1-mini</strong></span>
+        <span>Support QA · v12</span>
+        <span>Finished 12 Aug, 14:32</span>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button">Export</button>
+        <button class="btn primary" type="button">Re-run</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page">
+        <section class="summary" aria-label="Run summary">
+          <div class="metric"><div class="metric-value">142</div><div class="metric-label">questions scored</div></div>
+          <div class="metric"><div class="metric-value">71%</div><div class="metric-label">scored <b>3</b> · fully answered</div></div>
+          <div class="metric"><div class="metric-value">18</div><div class="metric-label">regressions vs previous run</div></div>
+          <div class="metric"><div class="metric-value"><span class="kappa">κ</span> 0.74</div><div class="metric-label">judge agreement · human sample</div></div>
+          <div class="run-verdict"><span><b>Pass bar: score 3.</b><br>Similarity is not correctness.</span></div>
+        </section>
+
+        <section class="filters" aria-label="Question filters">
+          <span class="filter-title">Questions</span>
+          <select class="filter-select" aria-label="Filter by score"><option>Score · all</option><option>Score 3</option><option>Score 2</option><option>Score 1</option><option>Score 0</option></select>
+          <select class="filter-select" aria-label="Filter by attribution"><option>Attribution · all</option><option>Retrieval</option><option>Prompt</option><option>Judge</option></select>
+          <button class="changed-filter" id="changedFilter" type="button">Changed only <span>×</span></button>
+          <button class="clear-filter" id="clearFilter" type="button">Clear</button>
+          <span class="filter-count" id="filterCount">34 changed questions shown</span>
+        </section>
+
+        <div class="main-grid">
+          <section class="table-card" aria-labelledby="questionTableTitle">
+            <div class="table-titlebar">
+              <div><h2 class="table-title" id="questionTableTitle">Scored questions</h2><p class="table-note">Every score links to the answer, source, and missed rubric evidence.</p></div>
+              <span class="column-note">sorted by change</span>
+            </div>
+            <div class="table-wrap">
+              <table aria-label="Scored evaluation questions">
+                <thead>
+                  <tr>
+                    <th class="num">#</th><th class="question">Question</th><th class="score-col">PA</th><th class="delta-col">Δ</th><th class="why-col">Why it failed</th><th class="evidence-col">Evidence</th><th class="latency">Latency</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="open">
+                    <td class="num">17</td><td class="question">Can I change the delivery address after my order has shipped?</td><td><span class="score s1">1</span></td><td class="delta-neg">−2</td><td><span class="tag retrieval">retrieval</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">2.4s</td>
+                  </tr>
+                  <tr class="expanded" id="evidence-17">
+                    <td colspan="7">
+                      <div class="evidence-panel">
+                        <div class="evidence-grid">
+                          <div class="evidence-box">
+                            <div class="evidence-label">Assistant answer</div>
+                            <p>“You can update your delivery address from Order details until the package is delivered. Contact the carrier if you need help.”</p>
+                          </div>
+                          <div class="evidence-box">
+                            <div class="evidence-label">Retrieved source · Shipping changes</div>
+                            <p>“Address changes are available only before fulfilment. Once an order is marked shipped, customers must contact the carrier; a redirect is not guaranteed.”</p>
+                          </div>
+                        </div>
+                        <div class="rubric-row">
+                          <div class="rubric-copy"><b>Missed rubric:</b> Must state that address changes are unavailable after fulfilment and carrier redirects are not guaranteed.</div>
+                          <button class="disagree" type="button">Disagree with this score</button>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr><td class="num">28</td><td class="question">How long does a refund take after I return an item?</td><td><span class="score s2">2</span></td><td class="delta-neg">−1</td><td><span class="tag prompt">prompt</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">1.8s</td></tr>
+                  <tr><td class="num">42</td><td class="question">Can a gift card be used with a promotional discount?</td><td><span class="score s0">0</span></td><td class="delta-neg">−2</td><td><span class="tag retrieval">retrieval</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">2.9s</td></tr>
+                  <tr><td class="num">56</td><td class="question">What documentation is required for a warranty replacement?</td><td><span class="score s3">3</span></td><td class="delta-pos">+1</td><td><span class="dash">—</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">1.6s</td></tr>
+                  <tr><td class="num">63</td><td class="question">Why was my payment declined even though my card is valid?</td><td><span class="score s1">1</span></td><td class="delta-neg">−1</td><td><span class="tag judge">judge</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">2.2s</td></tr>
+                  <tr><td class="num">71</td><td class="question">Can I cancel a subscription from the mobile app?</td><td><span class="score s2">2</span></td><td class="delta-neg">−1</td><td><span class="tag prompt">prompt</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">1.7s</td></tr>
+                  <tr><td class="num">84</td><td class="question">Does express shipping deliver on weekends in my region?</td><td><span class="score s3">3</span></td><td class="delta-pos">+1</td><td><span class="dash">—</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">2.1s</td></tr>
+                  <tr><td class="num">96</td><td class="question">How do I remove a saved payment method from my account?</td><td><span class="score s1">1</span></td><td class="delta-neg">−2</td><td><span class="tag retrieval">retrieval</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">2.5s</td></tr>
+                  <tr><td class="num">103</td><td class="question">What happens to loyalty points when I return a purchase?</td><td><span class="score s2">2</span></td><td class="delta-neg">−1</td><td><span class="tag judge">judge</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">1.9s</td></tr>
+                  <tr><td class="num">119</td><td class="question">Can an order be split and sent to two different addresses?</td><td><span class="score s0">0</span></td><td class="delta-neg">−2</td><td><span class="tag retrieval">retrieval</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">3.1s</td></tr>
+                  <tr><td class="num">134</td><td class="question">How can I request an invoice with my company tax details?</td><td><span class="score s3">3</span></td><td class="delta-pos">+1</td><td><span class="dash">—</span></td><td><a href="#evidence-17" class="evidence">Open</a></td><td class="latency">1.4s</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <aside class="side-stack">
+            <section class="side-card" aria-labelledby="disagreementTitle">
+              <h2 id="disagreementTitle">Judge disagreements</h2>
+              <p>Human sample reviewed against the automated judge.</p>
+              <div class="empty-state">
+                <div class="mascot" aria-hidden="true">
+                  <svg viewBox="0 0 30 30">
+                    <rect x="4" y="7" width="22" height="18" rx="7"></rect>
+                    <path d="M15 7V3M15 3l5 2.2L15 7.4"></path>
+                    <circle cx="11" cy="15" r="1"></circle><circle cx="19" cy="15" r="1"></circle>
+                    <path d="M11 20c2.3 1.5 5.7 1.5 8 0"></path>
+                  </svg>
+                </div>
+                <strong>No judge disagreements this run</strong>
+                <span>36 sampled answers aligned with the human review.</span>
+              </div>
+            </section>
+
+            <section class="side-card" aria-labelledby="readingTitle">
+              <h2 id="readingTitle">Reading this run</h2>
+              <p>Failure attribution identifies the first layer with evidence of a miss.</p>
+              <div class="legend-list">
+                <div class="legend-row"><span class="dot"></span><div><b>Retrieval</b>Source was absent, stale, or insufficient.</div></div>
+                <div class="legend-row"><span class="dot amber"></span><div><b>Prompt</b>Relevant source found; answer omitted the required condition.</div></div>
+                <div class="legend-row"><span class="dot red"></span><div><b>Judge</b>Evidence supports an appeal or rubric calibration review.</div></div>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+const changed=document.getElementById('changedFilter');
+const clear=document.getElementById('clearFilter');
+const count=document.getElementById('filterCount');
+let active=true;
+changed.addEventListener('click',()=>{
+  active=!active;
+  changed.style.display=active?'inline-flex':'none';
+  count.textContent=active?'34 changed questions shown':'142 questions shown';
+});
+clear.addEventListener('click',()=>{
+  active=false;
+  changed.style.display='none';
+  count.textContent='142 questions shown';
+});
+</script>
+</body>
+</html>

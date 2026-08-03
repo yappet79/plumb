@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gauge — Application status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --purple:#7865f2;
+  --purple-deep:#6c58ed;
+  --purple-tab:#8d79f2;
+  --row-active:#ece9fc;
+  --green:#00ba85;
+  --red:#c63c3c;
+  --amber:#f1ac2b;
+  --ink:#292d34;
+  --ink-soft:#656f7d;
+  --ink-faint:#767c86;
+  --line:#e6e6ea;
+  --bg:#fbfbfb;
+  --panel:#ffffff;
+  --panel-2:#f4f4f6;
+  --shadow:0 2px 8px rgba(41,45,52,.04);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:var(--bg)}
+body{
+  color:var(--ink);
+  font-family:"Inter",sans-serif;
+  font-size:14px;
+  font-weight:400;
+  line-height:1.45;
+  font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+button,input,select{font:inherit;color:inherit}
+button,select{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{
+  outline:2px solid var(--purple);
+  outline-offset:2px;
+}
+.app{
+  display:grid;
+  grid-template-columns:230px minmax(0,1fr);
+  width:100%;
+  height:100vh;
+  min-height:700px;
+}
+.sidebar{
+  display:flex;
+  min-height:0;
+  flex-direction:column;
+  padding:20px 14px 16px;
+  background:var(--panel);
+  border-right:1px solid var(--line);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-height:42px;
+  padding:0 8px 15px;
+}
+.brand-mark{
+  position:relative;
+  width:30px;
+  height:30px;
+  flex:0 0 30px;
+}
+.brand-mark svg{display:block;width:30px;height:30px}
+.brand-name{
+  font-size:15px;
+  font-weight:600;
+  line-height:1.2;
+  letter-spacing:-.015em;
+}
+.brand-sub{
+  margin-top:2px;
+  color:var(--ink-faint);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+.patient{
+  margin:0 2px 15px;
+  padding:10px 11px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel-2);
+}
+.patient-label,
+.nav-label{
+  color:var(--ink-faint);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+.patient-value{
+  margin-top:3px;
+  font-size:12px;
+  font-weight:500;
+}
+.nav-label{margin:10px 10px 6px}
+.nav-list{
+  display:grid;
+  gap:3px;
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+.nav-item{
+  display:flex;
+  align-items:center;
+  min-height:37px;
+  gap:10px;
+  padding:0 10px;
+  color:var(--ink-soft);
+  border-radius:8px;
+  font-size:13px;
+  font-weight:500;
+  user-select:none;
+}
+.nav-item:hover{color:var(--ink);background:var(--panel-2)}
+.nav-item.active{color:var(--ink);background:var(--row-active)}
+.nav-icon{
+  width:17px;
+  height:17px;
+  flex:0 0 17px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.55;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.sidebar-foot{
+  margin-top:auto;
+  padding:14px 2px 0;
+  border-top:1px solid var(--line);
+}
+.user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel-2);
+}
+.avatar{
+  display:grid;
+  width:31px;
+  height:31px;
+  flex:0 0 31px;
+  place-items:center;
+  color:var(--panel);
+  border-radius:8px;
+  background:var(--purple);
+  font-size:11px;
+  font-weight:600;
+}
+.user-name{font-size:12px;font-weight:500}
+.user-role{margin-top:1px;color:var(--ink-faint);font-size:10px}
+
+.shell{
+  display:grid;
+  min-width:0;
+  min-height:0;
+  grid-template-rows:72px minmax(0,1fr);
+}
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-width:0;
+  gap:28px;
+  padding:0 28px;
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+}
+.title-block{
+  min-width:220px;
+  flex:1 1 auto;
+}
+.crumb{
+  margin-bottom:2px;
+  color:var(--ink-soft);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+h1,h2,h3,p{margin:0}
+h1{
+  font-size:22px;
+  font-weight:600;
+  line-height:1.2;
+  letter-spacing:-.025em;
+}
+.top-actions{
+  display:flex;
+  min-width:0;
+  flex:0 1 auto;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+}
+.search{
+  display:flex;
+  width:270px;
+  height:36px;
+  min-width:210px;
+  align-items:center;
+  gap:8px;
+  padding:0 10px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+}
+.search svg{
+  width:15px;
+  height:15px;
+  flex:0 0 auto;
+  fill:none;
+  stroke:var(--ink-faint);
+  stroke-width:1.7;
+  stroke-linecap:round;
+}
+.search input{
+  width:100%;
+  min-width:0;
+  padding:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  font-size:12px;
+}
+.search input::placeholder{color:var(--ink-faint)}
+.key{
+  flex:0 0 auto;
+  padding:1px 5px;
+  color:var(--ink-faint);
+  border:1px solid var(--line);
+  border-radius:4px;
+  font-size:10px;
+  font-weight:500;
+}
+.build{
+  flex:0 0 auto;
+  padding:7px 10px;
+  color:var(--ink-soft);
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel-2);
+  font-size:11px;
+  font-weight:500;
+  white-space:nowrap;
+}
+.content{
+  min-width:0;
+  min-height:0;
+  padding:22px 28px 26px;
+  overflow:hidden;
+}
+.overview{
+  display:grid;
+  width:100%;
+  height:100%;
+  max-width:1480px;
+  margin:0 auto;
+  grid-template-rows:auto minmax(330px,1fr) minmax(385px,1.18fr);
+  gap:14px;
+}
+.intro-row{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  min-width:0;
+  gap:24px;
+}
+.intro{
+  max-width:930px;
+  color:var(--ink-soft);
+  font-size:12px;
+  line-height:1.5;
+}
+.intro b{color:var(--ink);font-weight:500}
+.field{
+  display:grid;
+  flex:0 0 auto;
+  gap:5px;
+}
+.field label{
+  color:var(--ink-faint);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+select{
+  height:34px;
+  min-width:160px;
+  padding:0 32px 0 10px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background-color:var(--panel);
+  font-size:12px;
+  font-weight:500;
+}
+.top-grid{
+  display:grid;
+  min-width:0;
+  min-height:0;
+  grid-template-columns:minmax(0,1.58fr) minmax(410px,.92fr);
+  gap:14px;
+}
+.lower-grid{
+  display:grid;
+  min-width:0;
+  min-height:0;
+  grid-template-columns:minmax(0,1.83fr) minmax(390px,.87fr);
+  gap:14px;
+}
+.card{
+  min-width:0;
+  min-height:0;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+  box-shadow:var(--shadow);
+}
+.card-header{
+  display:flex;
+  min-height:64px;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  padding:15px 17px 12px;
+  border-bottom:1px solid var(--line);
+}
+.card-title{
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+.card-note{
+  margin-top:3px;
+  color:var(--ink-soft);
+  font-size:11px;
+}
+.trajectory{
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr);
+}
+.chart-area{
+  min-height:0;
+  padding:8px 15px 10px 8px;
+}
+.chart-area svg{
+  display:block;
+  width:100%;
+  height:100%;
+  min-height:240px;
+}
+.chart-grid{stroke:var(--line);stroke-width:1}
+.chart-target{
+  stroke:var(--purple-tab);
+  stroke-width:1.4;
+  stroke-dasharray:5 5;
+}
+.chart-line{
+  fill:none;
+  stroke:var(--purple);
+  stroke-width:2.6;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.chart-area-fill{fill:url(#trajectoryFill)}
+.chart-point{
+  fill:var(--panel);
+  stroke:var(--purple);
+  stroke-width:2.5;
+}
+.chart-point.current{fill:var(--purple)}
+.chart-text{
+  fill:var(--ink-soft);
+  font-family:"Inter",sans-serif;
+  font-size:11px;
+  font-weight:400;
+}
+.chart-value{
+  font-family:"Inter",sans-serif;
+  font-size:11px;
+  font-weight:600;
+}
+.metrics-card{
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  overflow:hidden;
+}
+.metrics-head{
+  min-height:64px;
+  padding:15px 17px 12px;
+  border-bottom:1px solid var(--line);
+}
+.metric-grid{
+  display:grid;
+  min-height:0;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:12px 14px;
+}
+.metric-tile{
+  display:flex;
+  min-width:0;
+  min-height:100px;
+  align-items:center;
+  gap:11px;
+  padding:11px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+}
+.ring{
+  width:62px;
+  height:62px;
+  flex:0 0 62px;
+}
+.metric-copy{min-width:0}
+.metric-name{
+  font-size:12px;
+  font-weight:600;
+}
+.metric-delta{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  margin-top:5px;
+  font-size:10px;
+  font-weight:500;
+}
+.metric-target{
+  margin-top:4px;
+  color:var(--ink-faint);
+  font-size:10px;
+}
+.expand{
+  width:max-content;
+  margin:0 14px 12px;
+  padding:0;
+  color:var(--purple-deep);
+  border:0;
+  background:transparent;
+  font-size:11px;
+  font-weight:500;
+}
+.all-metrics{
+  display:none;
+  margin:0 14px 12px;
+  border-top:1px solid var(--line);
+}
+.all-row{
+  display:grid;
+  grid-template-columns:130px 54px minmax(70px,1fr) 76px;
+  align-items:center;
+  gap:8px;
+  min-height:31px;
+  border-bottom:1px solid var(--line);
+  font-size:10px;
+}
+.all-row:last-child{border-bottom:0}
+.all-name{font-weight:500}
+.all-value{text-align:right;font-weight:600}
+.all-track{
+  height:6px;
+  overflow:hidden;
+  border-radius:8px;
+  background:var(--panel-2);
+}
+.all-fill{height:100%;border-radius:8px}
+.all-target{color:var(--ink-faint);text-align:right}
+
+.runs-card{
+  display:grid;
+  min-height:0;
+  grid-template-rows:auto minmax(0,1fr);
+  overflow:hidden;
+}
+.runs-header{
+  display:flex;
+  min-height:66px;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:12px 15px;
+  border-bottom:1px solid var(--line);
+}
+.segment{
+  display:flex;
+  flex:0 0 auto;
+  gap:2px;
+  padding:2px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel-2);
+}
+.segment button{
+  min-width:36px;
+  height:25px;
+  padding:0 8px;
+  color:var(--ink-soft);
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  font-size:10px;
+  font-weight:500;
+}
+.segment button.active{
+  color:var(--purple-deep);
+  background:var(--panel);
+}
+.table-wrap{min-height:0;overflow:auto}
+table{
+  width:100%;
+  min-width:810px;
+  border-collapse:collapse;
+  table-layout:auto;
+  font-size:10.5px;
+}
+th,td{
+  height:43px;
+  padding:0 9px;
+  text-align:left;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+th{
+  height:34px;
+  color:var(--ink-faint);
+  background:var(--panel-2);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.035em;
+  text-transform:uppercase;
+}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--panel-2)}
+tbody tr.selected{background:var(--row-active)}
+tbody tr.selected td:first-child{box-shadow:inset 3px 0 0 var(--purple)}
+tbody tr:last-child td{border-bottom:0}
+.run-id{color:var(--purple-deep);font-weight:600}
+.muted{color:var(--ink-soft)}
+.main-tag{
+  margin-left:5px;
+  padding:2px 5px;
+  color:var(--purple-deep);
+  border-radius:4px;
+  background:var(--row-active);
+  font-size:10px;
+  font-weight:600;
+}
+.type-pill{
+  display:inline-flex;
+  padding:2px 6px;
+  color:var(--purple-deep);
+  border-radius:5px;
+  background:var(--row-active);
+  font-size:10px;
+  font-weight:500;
+}
+.type-pill.redteam{
+  color:var(--red);
+  background:color-mix(in srgb,var(--red) 10%,var(--panel));
+}
+.status{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  color:var(--ink-soft);
+  font-size:10px;
+  font-weight:500;
+}
+.status:before{
+  content:"";
+  width:6px;
+  height:6px;
+  flex:0 0 6px;
+  border-radius:50%;
+  background:var(--green);
+}
+.status.off:before{background:var(--ink-faint)}
+.covered{font-weight:600}
+.covered.complete{color:var(--green)}
+.covered.partial{color:var(--amber)}
+.xls{
+  padding:3px 6px;
+  color:var(--purple-deep);
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:var(--panel);
+  font-size:10px;
+  font-weight:500;
+}
+.attribution{
+  display:flex;
+  min-height:0;
+  flex-direction:column;
+  padding:16px 17px;
+}
+.attr-heading{
+  padding-bottom:13px;
+  border-bottom:1px solid var(--line);
+}
+.attr-title{
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+.attr-note{
+  margin-top:4px;
+  color:var(--ink-soft);
+  font-size:11px;
+}
+.attr-bars{
+  display:grid;
+  gap:13px;
+  margin-top:18px;
+}
+.attr-row{
+  display:grid;
+  grid-template-columns:76px minmax(90px,1fr) 34px;
+  align-items:center;
+  gap:10px;
+}
+.attr-name{color:var(--ink-soft);font-size:11px;font-weight:500}
+.attr-track{
+  height:8px;
+  overflow:hidden;
+  border-radius:8px;
+  background:var(--panel-2);
+}
+.attr-fill{
+  height:100%;
+  border-radius:8px;
+  background:var(--purple);
+  transition:width 180ms ease;
+}
+.attr-value{text-align:right;font-size:11px;font-weight:600}
+.diagnosis{
+  margin-top:auto;
+  padding:12px 0 0;
+  color:var(--ink-soft);
+  border-top:1px solid var(--line);
+  font-size:11px;
+  line-height:1.5;
+}
+.diagnosis b{color:var(--ink);font-weight:600}
+.owner{color:var(--purple-deep);font-weight:500}
+.empty{
+  display:grid;
+  min-height:120px;
+  place-items:center;
+  color:var(--ink-soft);
+  font-size:12px;
+}
+@media(max-width:1180px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100vh}
+  .overview{grid-template-rows:auto auto auto}
+  .top-grid,.lower-grid{grid-template-columns:1fr}
+  .content{overflow:visible}
+}
+@media(max-width:820px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .topbar{padding:12px 18px;min-height:72px;height:auto;align-items:flex-start}
+  .top-actions{flex-wrap:wrap}
+  .search{width:220px}
+  .content{padding:18px}
+  .intro-row{align-items:flex-start;flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 30 30">
+          <rect x="3" y="5" width="24" height="22" rx="8" fill="var(--row-active)" stroke="var(--purple-tab)" stroke-width="1.5"/>
+          <path d="M15 5V1.8M15 1.8l8 3.3-8 3.2Z" fill="var(--purple)" stroke="var(--purple)" stroke-linejoin="round"/>
+          <circle cx="11" cy="15" r="1.7" fill="var(--ink)"/>
+          <circle cx="19" cy="15" r="1.7" fill="var(--ink)"/>
+          <path d="M10 20c3 2.4 7 2.4 10 0" fill="none" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <div>
+        <div class="brand-name">Gauge</div>
+        <div class="brand-sub">evaluation console</div>
+      </div>
+    </div>
+
+    <div class="patient">
+      <div class="patient-label">Integrated patient</div>
+      <div class="patient-value">Northwind Compliance</div>
+    </div>
+
+    <div class="nav-label">Workspace</div>
+    <nav aria-label="Workspace">
+      <ul class="nav-list">
+        <li><div class="nav-item active" aria-current="page">
+          <svg class="nav-icon" viewBox="0 0 20 20"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="12" y="3" width="5" height="5" rx="1"/><rect x="3" y="12" width="5" height="5" rx="1"/><rect x="12" y="12" width="5" height="5" rx="1"/></svg>Overview
+        </div></li>
+        <li><div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20"><ellipse cx="10" cy="5" rx="6" ry="2.5"/><path d="M4 5v5c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V5M4 10v5c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-5"/></svg>Datasets
+        </div></li>
+        <li><div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20"><path d="M4 4.5h12M4 10h12M4 15.5h12"/><circle cx="6" cy="4.5" r="1"/><circle cx="14" cy="10" r="1"/><circle cx="8" cy="15.5" r="1"/></svg>Runs
+        </div></li>
+        <li><div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20"><path d="m10 3 2.1 4.9L17 10l-4.9 2.1L10 17l-2.1-4.9L3 10l4.9-2.1Z"/></svg>Analysis
+        </div></li>
+        <li><div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20"><path d="M7 3h6M9 3v5l-4 7a1.4 1.4 0 0 0 1.2 2h7.6a1.4 1.4 0 0 0 1.2-2l-4-7V3M7.3 12h5.4"/></svg>Experiments
+        </div></li>
+      </ul>
+    </nav>
+
+    <div class="nav-label">Intelligence</div>
+    <nav aria-label="Intelligence">
+      <ul class="nav-list">
+        <li><div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20"><path d="M10 3v14M3 10h14"/><circle cx="10" cy="10" r="7"/></svg>Knowledge brain
+        </div></li>
+        <li><div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20"><path d="M4 15.5 5.2 12 13 4.2a1.7 1.7 0 0 1 2.4 2.4L7.6 14.4 4 15.5Z"/><path d="m11.8 5.4 2.8 2.8"/></svg>Assistant
+        </div></li>
+        <li><div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20"><path d="M5 3h8l3 3v11H5Z"/><path d="M13 3v4h3M8 10h5M8 13h5"/></svg>Reports
+        </div></li>
+        <li><div class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M15.3 4.7l-1.4 1.4M6.1 13.9l-1.4 1.4"/></svg>Connections
+        </div></li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="user">
+        <div class="avatar">DT</div>
+        <div>
+          <div class="user-name">Danylo T.</div>
+          <div class="user-role">Assessor</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="shell">
+    <header class="topbar">
+      <div class="title-block">
+        <div class="crumb">Overview</div>
+        <h1>Application status</h1>
+      </div>
+      <div class="top-actions">
+        <label class="search" aria-label="Search runs and questions">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m12.5 12.5 4 4"/></svg>
+          <input type="search" placeholder="Search runs, questions…">
+          <span class="key">⌘K</span>
+        </label>
+        <span class="build">build C · latest</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="overview">
+        <div class="intro-row">
+          <p class="intro">The state of the application at a glance — patient <b>Northwind Compliance</b>, shown for the <b>main dataset</b> by default. The trajectory is plotted <b>build-wise</b>: every point is a release, not a calendar date.</p>
+          <div class="field">
+            <label for="datasetSelect">Dataset</label>
+            <select id="datasetSelect"></select>
+          </div>
+        </div>
+
+        <div class="top-grid">
+          <section class="card trajectory" aria-labelledby="trajectoryTitle">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title" id="trajectoryTitle">Quality trajectory</h2>
+                <p class="card-note">build-wise — each point is a build, not a date</p>
+              </div>
+              <div class="field">
+                <label for="metricSelect">Metric</label>
+                <select id="metricSelect"></select>
+              </div>
+            </div>
+            <div class="chart-area">
+              <svg id="trajectoryChart" viewBox="0 0 760 250" role="img" aria-label="Quality trajectory by build"></svg>
+            </div>
+          </section>
+
+          <section class="card metrics-card" aria-labelledby="metricsTitle">
+            <div class="metrics-head">
+              <h2 class="card-title" id="metricsTitle">Main metrics</h2>
+              <p class="card-note">selected dataset · vs previous build</p>
+            </div>
+            <div class="metric-grid" id="metricGrid"></div>
+            <button class="expand" id="expandMetrics" type="button">▸ Show all registered metrics</button>
+            <div class="all-metrics" id="allMetrics"></div>
+          </section>
+        </div>
+
+        <div class="lower-grid">
+          <section class="card runs-card" aria-labelledby="runsTitle">
+            <div class="runs-header">
+              <div>
+                <h2 class="card-title" id="runsTitle">Recent runs</h2>
+                <p class="card-note">covered = questions the patient actually answered · click a run for failure attribution</p>
+              </div>
+              <div class="segment" id="runFilters" aria-label="Run type filter">
+                <button class="active" type="button" data-filter="All">All</button>
+                <button type="button" data-filter="quality">Quality</button>
+                <button type="button" data-filter="experiment">Exp</button>
+                <button type="button" data-filter="load">Load</button>
+                <button type="button" data-filter="redteam">Red</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table aria-label="Recent runs">
+                <thead>
+                  <tr>
+                    <th>Run</th>
+                    <th>Build</th>
+                    <th>Dataset</th>
+                    <th>Type</th>
+                    <th>Owner</th>
+                    <th>Status</th>
+                    <th>Covered</th>
+                    <th>Report</th>
+                  </tr>
+                </thead>
+                <tbody id="runsBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card attribution" id="attribution" aria-live="polite"></section>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+const COLORS={
+  purple:"#7865f2",
+  purpleTab:"#8d79f2",
+  green:"#00ba85",
+  red:"#c63c3c",
+  amber:"#f1ac2b",
+  ink:"#292d34",
+  soft:"#656f7d",
+  faint:"#767c86",
+  line:"#e6e6ea",
+  panel:"#ffffff"
+};
+
+const DATASETS={
+  "Validation · 61":{
+    main:true,
+    builds:["A","B","C"],
+    metrics:{
+      "Coverage":{v:[51,63,82],max:100,unit:"%",target:75},
+      "Policy Accuracy":{v:[1.3,1.9,2.4],max:3,unit:"/3",target:2.5},
+      "Faithfulness":{v:[0.61,0.78,0.93],max:1,unit:"",target:0.95},
+      "Context Precision":{v:[0.42,0.66,0.82],max:1,unit:"",target:0.80},
+      "p95 Latency":{v:[41,33,22],max:60,unit:"s",target:30,lower:true},
+      "Injection Resistance":{v:[68,88,96],max:100,unit:"%",target:100}
+    }
+  },
+  "Cluster B · 19":{
+    main:false,
+    builds:["B","C"],
+    metrics:{
+      "Coverage":{v:[58,74],max:100,unit:"%",target:75},
+      "Policy Accuracy":{v:[1.7,2.2],max:3,unit:"/3",target:2.5}
+    }
+  },
+  "Attack · 16":{
+    main:false,
+    builds:["A","C"],
+    metrics:{
+      "Injection Resistance":{v:[68,96],max:100,unit:"%",target:100}
+    }
+  }
+};
+
+const RUNS=[
+  {id:"R-118",build:"C",ds:"Validation · 61",type:"quality",owner:"D. Tsarov",shipped:true,covered:"61/61",
+   attr:[["Retrieval",46],["Chunking",21],["Metadata",14],["Prompt",12],["Logic",7]],
+   diag:"two-thirds of misses are retrieval/chunking — index & metadata work, not prompt tuning.",diagOwner:"retrieval"},
+  {id:"R-116",build:"C",ds:"Cluster B · 19",type:"experiment",owner:"D. Tsarov",shipped:false,covered:"19/19",
+   attr:[["Chunking",38],["Retrieval",27],["Metadata",19],["Prompt",11],["Logic",5]],
+   diag:"this cluster fails on split rules — long clauses fragment mid-rule; re-chunk before touching prompts.",diagOwner:"chunking"},
+  {id:"R-112",build:"B",ds:"Validation · 61",type:"quality",owner:"S. Lee",shipped:true,covered:"58/61",
+   attr:[["Retrieval",41],["Prompt",24],["Chunking",18],["Metadata",10],["Logic",7]],
+   diag:"retrieval still dominates, but a quarter of misses are prompt-layer — abstention rules missing.",diagOwner:"retrieval"},
+  {id:"R-109",build:"B",ds:"Concurrency · 10",type:"load",owner:"D. Tsarov",shipped:false,covered:"6/10",attr:null},
+  {id:"R-104",build:"A",ds:"Validation · 61",type:"quality",owner:"D. Tsarov",shipped:true,covered:"55/61",
+   attr:[["Prompt",34],["Retrieval",30],["Chunking",20],["Metadata",9],["Logic",7]],
+   diag:"baseline build — prompt gaps and raw retrieval share the blame; cheapest-layer-first says start with the prompt.",diagOwner:"prompt"},
+  {id:"R-101",build:"A",ds:"Attack · 16",type:"redteam",owner:"D. Tsarov",shipped:true,covered:"16/16",attr:null}
+];
+
+const datasetSelect=document.getElementById("datasetSelect");
+const metricSelect=document.getElementById("metricSelect");
+const metricGrid=document.getElementById("metricGrid");
+const allMetrics=document.getElementById("allMetrics");
+const expandMetrics=document.getElementById("expandMetrics");
+const runsBody=document.getElementById("runsBody");
+const attribution=document.getElementById("attribution");
+const NS="http://www.w3.org/2000/svg";
+
+let selectedRun="R-118";
+let runFilter="All";
+let metricsExpanded=false;
+
+function formatMetric(metric,value){
+  if(metric.unit==="%") return Math.round(value)+"%";
+  if(metric.unit==="s") return Math.round(value)+"s";
+  if(metric.unit==="/3") return Number(value).toFixed(1);
+  return Number(value).toFixed(2);
+}
+function targetFormat(metric){
+  if(metric.unit==="/3") return Number(metric.target).toFixed(1);
+  return formatMetric(metric,metric.target);
+}
+function metricGood(metric,value){
+  return metric.lower ? value<=metric.target : value>=metric.target;
+}
+function svgEl(name,attrs={}){
+  const el=document.createElementNS(NS,name);
+  Object.entries(attrs).forEach(([key,value])=>el.setAttribute(key,value));
+  return el;
+}
+function currentDataset(){
+  return DATASETS[datasetSelect.value] || DATASETS["Validation · 61"];
+}
+function fillDatasetSelect(){
+  datasetSelect.innerHTML=Object.entries(DATASETS).map(([name,data]) =>
+    `<option value="${name}"${data.main?" selected":""}>${name}${data.main?" ★ main":""}</option>`
+  ).join("");
+}
+function fillMetricSelect(){
+  const data=currentDataset();
+  const previous=metricSelect.value;
+  const keys=Object.keys(data.metrics);
+  metricSelect.innerHTML=keys.map(key =>
+    `<option value="${key}"${key===previous?" selected":""}>${key}</option>`
+  ).join("");
+}
+function ring(metric,color){
+  const value=metric.v[metric.v.length-1];
+  const ratio=Math.max(.03,Math.min(1,metric.lower?1-value/metric.max:value/metric.max));
+  const radius=25;
+  const circumference=2*Math.PI*radius;
+  return `<svg class="ring" viewBox="0 0 62 62" aria-hidden="true">
+    <defs>
+      <linearGradient id="ring-${Math.random().toString(36).slice(2)}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="var(--purple-tab)"/>
+        <stop offset="100%" stop-color="${color}"/>
+      </linearGradient>
+    </defs>
+    <circle cx="31" cy="31" r="${radius}" fill="none" stroke="var(--panel-2)" stroke-width="5"/>
+    <circle cx="31" cy="31" r="${radius}" fill="none" stroke="${color}" stroke-width="5" stroke-linecap="round"
+      stroke-dasharray="${circumference}" stroke-dashoffset="${circumference*(1-ratio)}" transform="rotate(-90 31 31)"/>
+    <text x="31" y="35" text-anchor="middle" fill="var(--ink)" font-family="Inter, sans-serif" font-size="12" font-weight="600">${formatMetric(metric,value)}</text>
+  </svg>`;
+}
+function renderMetricTiles(){
+  const data=currentDataset();
+  const keys=["Coverage","Policy Accuracy","p95 Latency","Injection Resistance"];
+  metricGrid.innerHTML=keys.map(key=>{
+    const metric=data.metrics[key];
+    if(!metric){
+      return `<article class="metric-tile">
+        <svg class="ring" viewBox="0 0 62 62" aria-hidden="true">
+          <circle cx="31" cy="31" r="25" fill="none" stroke="var(--line)" stroke-width="5" stroke-dasharray="4 5"/>
+          <text x="31" y="36" text-anchor="middle" fill="var(--ink-faint)" font-family="Inter, sans-serif" font-size="18">—</text>
+        </svg>
+        <div class="metric-copy">
+          <div class="metric-name">${key}</div>
+          <div class="metric-delta" style="color:var(--ink-faint)">not measured on this dataset</div>
+        </div>
+      </article>`;
+    }
+    const value=metric.v.at(-1);
+    const previous=metric.v.length>1?metric.v.at(-2):null;
+    const color=metricGood(metric,value)?"var(--green)":"var(--amber)";
+    let delta=`<div class="metric-delta" style="color:var(--ink-faint)">single build</div>`;
+    if(previous!==null){
+      const difference=value-previous;
+      const good=metric.lower?difference<0:difference>0;
+      const prefix=difference>0?"▲ +":"▼ ";
+      delta=`<div class="metric-delta" style="color:${good?"var(--green)":"var(--red)"}">${prefix}${formatMetric(metric,Math.abs(difference))} <span style="color:var(--ink-faint);font-weight:400">vs build ${data.builds.at(-2)}</span></div>`;
+    }
+    return `<article class="metric-tile">
+      ${ring(metric,color)}
+      <div class="metric-copy">
+        <div class="metric-name">${key}</div>
+        ${delta}
+        <div class="metric-target">target ${targetFormat(metric)}</div>
+      </div>
+    </article>`;
+  }).join("");
+
+  allMetrics.innerHTML=Object.entries(data.metrics).map(([name,metric])=>{
+    const value=metric.v.at(-1);
+    const good=metricGood(metric,value);
+    const width=Math.max(3,Math.min(100,value/metric.max*100));
+    return `<div class="all-row">
+      <span class="all-name">${name}</span>
+      <span class="all-value" style="color:${good?"var(--green)":"var(--amber)"}">${formatMetric(metric,value)}</span>
+      <span class="all-track"><span class="all-fill" style="display:block;width:${width}%;background:${good?"var(--green)":"var(--amber)"}"></span></span>
+      <span class="all-target">target ${targetFormat(metric)}</span>
+    </div>`;
+  }).join("");
+}
+function renderChart(){
+  const svg=document.getElementById("trajectoryChart");
+  const data=currentDataset();
+  const metric=data.metrics[metricSelect.value];
+  svg.innerHTML="";
+  if(!metric)return;
+
+  const defs=svgEl("defs");
+  const gradient=svgEl("linearGradient",{id:"trajectoryFill",x1:"0",y1:"0",x2:"0",y2:"1"});
+  gradient.appendChild(svgEl("stop",{offset:"0%","stop-color":COLORS.purple,"stop-opacity":".16"}));
+  gradient.appendChild(svgEl("stop",{offset:"100%","stop-color":COLORS.purple,"stop-opacity":"0"}));
+  defs.appendChild(gradient);
+  svg.appendChild(defs);
+
+  const left=58,right=724,top=24,bottom=198;
+  const width=right-left,height=bottom-top;
+  const x=index=>data.builds.length===1?left+width/2:left+(index/(data.builds.length-1))*width;
+  const y=value=>bottom-(value/metric.max)*height;
+
+  [0,.25,.5,.75,1].forEach(step=>{
+    const yy=y(metric.max*step);
+    svg.appendChild(svgEl("line",{x1:left,y1:yy,x2:right,y2:yy,class:"chart-grid"}));
+    const text=svgEl("text",{x:left-10,y:yy+4,"text-anchor":"end",class:"chart-text"});
+    text.textContent=formatMetric(metric,metric.max*step);
+    svg.appendChild(text);
+  });
+
+  const targetY=y(metric.target);
+  svg.appendChild(svgEl("line",{x1:left,y1:targetY,x2:right,y2:targetY,class:"chart-target"}));
+  const targetText=svgEl("text",{x:right,y:Math.max(top+11,targetY-8),"text-anchor":"end",class:"chart-text",fill:COLORS.purpleTab});
+  targetText.textContent="target "+targetFormat(metric);
+  svg.appendChild(targetText);
+
+  const points=metric.v.map((value,index)=>({x:x(index),y:y(value),value}));
+  let linePath="";
+  points.forEach((point,index)=>linePath+=(index?" L":"M")+point.x+" "+point.y);
+  const areaPath=linePath+` L${points.at(-1).x} ${bottom} L${points[0].x} ${bottom} Z`;
+  svg.appendChild(svgEl("path",{d:areaPath,class:"chart-area-fill"}));
+  svg.appendChild(svgEl("path",{d:linePath,class:"chart-line"}));
+
+  data.builds.forEach((build,index)=>{
+    const point=points[index];
+    const current=index===data.builds.length-1;
+    svg.appendChild(svgEl("circle",{cx:point.x,cy:point.y,r:current?5.5:5,class:current?"chart-point current":"chart-point"}));
+
+    const nearTarget=Math.abs(point.y-targetY)<25;
+    const labelBelow=nearTarget || point.y<top+25;
+    const valueText=svgEl("text",{
+      x:point.x,
+      y:labelBelow?point.y+20:point.y-12,
+      "text-anchor":"middle",
+      class:"chart-value",
+      fill:metricGood(metric,point.value)?COLORS.green:COLORS.amber
+    });
+    valueText.textContent=formatMetric(metric,point.value);
+    svg.appendChild(valueText);
+
+    const buildText=svgEl("text",{x:point.x,y:226,"text-anchor":"middle",class:"chart-text"});
+    buildText.textContent="build "+build;
+    svg.appendChild(buildText);
+  });
+
+  const axisCaption=svgEl("text",{x:(left+right)/2,y:247,"text-anchor":"middle",class:"chart-text"});
+  axisCaption.textContent="Build sequence";
+  svg.appendChild(axisCaption);
+}
+function statusHTML(run){
+  return `<span class="status ${run.shipped?"":"off"}">${run.shipped?"shipped":"not shipped"}</span>`;
+}
+function coveredHTML(run){
+  const [covered,total]=run.covered.split("/").map(Number);
+  return `<span class="covered ${covered===total?"complete":"partial"}">${run.covered}</span>`;
+}
+function typeHTML(type){
+  return `<span class="type-pill ${type==="redteam"?"redteam":""}">${type}</span>`;
+}
+function renderRuns(){
+  const rows=RUNS.filter(run=>runFilter==="All"||run.type===runFilter);
+  if(!rows.some(run=>run.id===selectedRun)) selectedRun=rows[0]?.id || null;
+
+  runsBody.innerHTML=rows.length?rows.map(run=>`
+    <tr class="${run.id===selectedRun?"selected":""}" data-run="${run.id}" tabindex="0">
+      <td><span class="run-id">${run.id}</span></td>
+      <td>build ${run.build}</td>
+      <td class="muted">${run.ds}${run.ds==="Validation · 61"?'<span class="main-tag">MAIN</span>':""}</td>
+      <td>${typeHTML(run.type)}</td>
+      <td>${run.owner}</td>
+      <td>${statusHTML(run)}</td>
+      <td>${coveredHTML(run)}</td>
+      <td><button class="xls" type="button" data-report="${run.id}">↓ xlsx</button></td>
+    </tr>
+  `).join(""):`<tr><td colspan="8"><div class="empty">No runs of this type.</div></td></tr>`;
+
+  runsBody.querySelectorAll("tr[data-run]").forEach(row=>{
+    const select=()=>{
+      selectedRun=row.dataset.run;
+      renderRuns();
+      renderAttribution();
+    };
+    row.addEventListener("click",event=>{
+      if(event.target.closest("[data-report]"))return;
+      select();
+    });
+    row.addEventListener("keydown",event=>{
+      if(event.key==="Enter"||event.key===" "){
+        event.preventDefault();
+        select();
+      }
+    });
+  });
+  runsBody.querySelectorAll("[data-report]").forEach(button=>{
+    button.addEventListener("click",event=>{
+      event.stopPropagation();
+      alert("Prototype — would generate and download: "+button.dataset.report+" report .xlsx");
+    });
+  });
+}
+function attrColor(name,index){
+  if(name==="Prompt")return "var(--amber)";
+  if(name==="Logic")return "var(--red)";
+  if(index===1)return "var(--purple-tab)";
+  return "var(--purple)";
+}
+function renderAttribution(){
+  const run=RUNS.find(item=>item.id===selectedRun);
+  if(!run){
+    attribution.innerHTML="";
+    return;
+  }
+  if(!run.attr){
+    attribution.innerHTML=`
+      <div class="attr-heading">
+        <h2 class="attr-title">Failure attribution — ${run.id} · build ${run.build}</h2>
+        <p class="attr-note">where misses come from</p>
+      </div>
+      <div class="empty">No failure attribution for a <b>${run.type}</b> run — see <b>Analysis</b> (${run.type==="load"?"Load: latency & capacity":"per-question resistance results"}).</div>`;
+    return;
+  }
+  attribution.innerHTML=`
+    <div class="attr-heading">
+      <h2 class="attr-title">Failure attribution — ${run.id} · build ${run.build} · ${run.ds}</h2>
+      <p class="attr-note">where misses come from</p>
+    </div>
+    <div class="attr-bars">
+      ${run.attr.map(([name,value],index)=>`
+        <div class="attr-row">
+          <span class="attr-name">${name}</span>
+          <span class="attr-track"><span class="attr-fill" style="display:block;width:${value}%;background:${attrColor(name,index)}"></span></span>
+          <span class="attr-value">${value}%</span>
+        </div>`).join("")}
+    </div>
+    <p class="diagnosis"><b>Diagnosis:</b> ${run.diag} <span class="owner">Owner: ${run.diagOwner}.</span></p>`;
+}
+function refreshDataset(){
+  fillMetricSelect();
+  renderMetricTiles();
+  renderChart();
+}
+fillDatasetSelect();
+fillMetricSelect();
+renderMetricTiles();
+renderChart();
+renderRuns();
+renderAttribution();
+
+datasetSelect.addEventListener("change",refreshDataset);
+metricSelect.addEventListener("change",renderChart);
+
+expandMetrics.addEventListener("click",()=>{
+  metricsExpanded=!metricsExpanded;
+  allMetrics.style.display=metricsExpanded?"block":"none";
+  expandMetrics.textContent=metricsExpanded?"▾ Hide all registered metrics":"▸ Show all registered metrics";
+});
+
+document.getElementById("runFilters").querySelectorAll("button").forEach(button=>{
+  button.addEventListener("click",()=>{
+    runFilter=button.dataset.filter;
+    document.querySelectorAll("#runFilters button").forEach(item=>item.classList.toggle("active",item===button));
+    renderRuns();
+    renderAttribution();
+  });
+});
+
+document.addEventListener("keydown",event=>{
+  if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==="k"){
+    event.preventDefault();
+    document.querySelector(".search input").focus();
+  }
+});
+</script>
+</body>
+</html>

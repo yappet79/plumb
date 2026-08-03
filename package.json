@@ -1,0 +1,10 @@
+{
+  "name": "design-module",
+  "version": "1.0.0",
+  "description": "Three models draw in parallel, a human picks the winner, and the layout is verified by code.",
+  "license": "MIT",
+  "type": "module",
+  "optionalDependencies": {
+    "sharp": "^0.34.0"
+  }
+}
