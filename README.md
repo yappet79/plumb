@@ -68,14 +68,14 @@ look up what's current → brief → 3 engines in parallel → layout checked by
 Claude Code picks it up as a skill:
 
 ```bash
-git clone <this repo> ~/.claude/skills/plumb
+git clone https://github.com/yappet79/plumb ~/.claude/skills/plumb
 ```
 
 Or use it as plain CLI — no agent, no subscription:
 
 ```bash
 node scripts/bakeoff.mjs --brief brief.md --out ./out
-node scripts/check-layout.mjs ./out/design-terra.html
+node scripts/check-layout.mjs ./out/design-terra.html --container '.slide'
 ```
 
 **Needs:** Node 20+ and Chrome. No `npm install` required — `sharp` is optional and only makes inlined photos ~30x smaller.
