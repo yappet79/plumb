@@ -368,6 +368,38 @@ does not exist. A ready visual language when depth is needed without illustratio
   edge*. And when a slide genuinely has less to say, spend the space — larger type, more leading,
   wider gaps, a band of image — rather than leaving it over.
 
+  **No viewport units anywhere in a fitted deck** — no `vh`, `dvh`, `vw`, `svh`, `vmin`. Every
+  length is a plain pixel on the canvas, and the deck container is `height: 900px`, not `100dvh`.
+  Viewport units resolve *before* `fit-deck` scales the page, so afterwards they no longer mean
+  what they say: a wrapper set to `100dvh` ends up shorter than the 900px stage inside it and
+  `overflow: hidden` silently clips the bottom of every slide.
+
+  **A footer costs more than it gives.** A running band with a logo and a slide number eats
+  40–60px at the bottom of every slide, is the first thing to collide with content on a short
+  window, and reads as a stray grey stripe when it half-fits. Put the mark and the confidentiality
+  line on the title slide and leave the other slides the whole frame.
+
+### A fixed-canvas deck is not a mobile format
+
+Do not try to fix this with scaling. On a 390px phone a 1600×900 canvas fits at about 0.24, which
+puts 18px body type at four physical pixels — not small, absent. `zoom` and `scroll-snap` also
+behave differently on mobile browsers, so the page can look broken rather than merely tiny.
+
+Ship a second medium instead:
+
+```bash
+node scripts/render-png.mjs deck.html --each ".slide" --out slides/slide.png --size 1600x900 --scale 2
+```
+
+Then serve those images to narrow screens from the same URL — hide the deck under
+`@media (max-width:900px)`, reset `zoom`, and lay the slides out as a plain vertical list of
+full-width images. Downscale them to ~1400px and encode as jpeg first: the full-resolution set
+runs to several megabytes, which is the wrong thing to send over a phone connection.
+
+Check the export count. `--each ".slide"` matches every element whose class list contains `slide`,
+which can include wrappers you did not mean; the extra frames come out as flat 20KB files. Compare
+the file count to the slide count and delete the blanks.
+
 ### Images in a generated artefact — five rules paid for in reruns
 
 All five come from one deck on 04 Aug 2026.

@@ -49,16 +49,23 @@ body { margin: 0; }
 </style>
 <script>/* fit-deck */
 (function () {
-  var CANVAS = ${CW};
-  // clientWidth, not innerWidth. innerWidth includes the vertical scrollbar, and a deck that
-  // scrolls through its slides always has one — so the ratio comes out a scrollbar too large,
-  // the canvas lands a dozen pixels wider than the usable width, and the reader gets a small
-  // horizontal scroll on a deck the checker called clean. Caught 04 Aug 2026.
-  function width() { return document.documentElement.clientWidth || window.innerWidth; }
-  function fit() { document.body.style.zoom = Math.min(1, width() / CANVAS); }
+  var CW = ${CW}, CH = ${CH};
+  // Fit BOTH dimensions. Scaling on width alone looks right on a wide monitor and fails on every
+  // laptop: at 1280 wide a 1600x900 canvas renders 1280x720, and if the window only offers 660px
+  // of height the slide is cut off at the bottom and scroll-snap shows the top edge of the next
+  // one bleeding in. Caught 04 Aug 2026, on every slide at once.
+  // clientWidth/clientHeight, not innerWidth/innerHeight: the inner* pair includes the scrollbars,
+  // and a deck that scrolls through its slides always has one — the ratio then comes out a
+  // scrollbar too large and the reader gets a sliver of horizontal scroll.
+  function fit() {
+    var d = document.documentElement;
+    var w = d.clientWidth || window.innerWidth;
+    var h = d.clientHeight || window.innerHeight;
+    document.body.style.zoom = Math.min(1, w / CW, h / CH);
+  }
   fit();
   addEventListener('resize', fit);
-  // The first fit runs before webfonts settle; once they do, the scrollbar may appear or go.
+  // The first fit runs before webfonts settle; once they do, a scrollbar may appear or go.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 })();
 </script>`;
