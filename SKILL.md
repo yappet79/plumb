@@ -361,6 +361,42 @@ does not exist. A ready visual language when depth is needed without illustratio
   Self-containment counts for real: embed the font as base64 rather than linking Google
   Fonts. With no network the whole deck falls back to a substitute face, and the slides tuned
   by hand are the first to break.
+
+  **Fill the frame, and make it checkable.** The commonest defect in a generated deck is content
+  that stops around 600px and leaves the bottom third empty — on a projector that reads as an
+  unfinished slide. Put a number in the brief: *the last element sits within 80px of the bottom
+  edge*. And when a slide genuinely has less to say, spend the space — larger type, more leading,
+  wider gaps, a band of image — rather than leaving it over.
+
+### Images in a generated artefact — five rules paid for in reruns
+
+All five come from one deck on 04 Aug 2026.
+
+- **Slots carry no inline size.** Write `<img data-slot="x" alt="…">` and nothing else; put the
+  dimensions and `object-fit: cover` on the wrapping element. An inline `width:100%;height:100%`
+  beats the engine's own `.thumb img{width:120px}` — inline always wins — and the row explodes.
+- **Transparency dies in jpeg.** `fill-slots.mjs` now keeps an alpha source as png, because a
+  transparent logo compressed to jpeg returns as a solid black rectangle, silently, and looks
+  like a design decision. If you prepare an asset by hand, flatten it onto the ground colour
+  yourself.
+- **Photographs belong on sparse slides only.** On a dense slide — a ten-row table, two columns
+  of content — a photograph steals width from content that needs it and leaves the frame no
+  fuller. Title and statement slides, nowhere else.
+- **Never crop a photograph into a wide, short band.** Any such crop is an unreadable smear of
+  out-of-focus colour and reads as an accident. Full-height thirds, or a full-width band across
+  the top half. And the footer line never crosses an image.
+- **One mark per corner.** A logo on the title slide *and* the same logo in that slide's footer
+  puts the same emblem twice in the same corner. Suppress the footer mark on the title.
+
+### Numbers that must match something you ship
+
+If a figure in the artefact has to agree with a spreadsheet, a repo or a report, **put the figure
+in the brief**. An engine given a total and no breakdown will invent a plausible breakdown, and it
+will be wrong in a way nobody notices until a client adds up the column.
+
+Do not patch numbers into generated HTML afterwards by searching for the label: the same words
+appear in more than one table, a string search hits the first one, and you silently corrupt a
+different slide. Fix the brief and regenerate — it costs about $0.14 and it is correct.
 - **PPTX — this module does not draw it.** We tried, and the output was structurally sound and
   visually poor, because a pptx is text boxes and shapes: no cascade, no real typography, no
   layers. Beauty and "editable in PowerPoint" are goals that fight, and pretending otherwise

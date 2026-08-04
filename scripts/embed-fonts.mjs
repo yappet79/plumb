@@ -33,9 +33,41 @@ const before = Buffer.byteLength(html);
 
 // Font links: the css2 request itself and the preconnects sitting beside it.
 const cssLinks = [...html.matchAll(/<link[^>]+href="(https:\/\/fonts\.googleapis\.com\/css2[^"]+)"[^>]*>/g)];
+
+// `@import url(...)` inside a <style> block is the other way a generator asks for a webfont, and
+// it is invisible to a <link> search. Rewriting it to a <link> first means one code path below.
+// Caught 04 Aug 2026: two of three engines used @import, this script reported "nothing to inline",
+// and both files shipped still depending on the network — the report was reassuring and wrong.
+const imports = [...html.matchAll(/@import\s+url\((["']?)(https:\/\/fonts\.googleapis\.com\/css2[^)"']+)\1\)\s*;?/g)];
+if (imports.length) {
+  for (const m of imports) {
+    html = html.replace(m[0], '');
+    const link = `<link href="${m[2]}" rel="stylesheet">`;
+    html = /<\/head>/i.test(html) ? html.replace(/<\/head>/i, `${link}\n</head>`) : `${link}\n${html}`;
+  }
+  console.log(`  rewrote ${imports.length} @import to <link> (@import is invisible to a link search)`);
+  cssLinks.push(...html.matchAll(/<link[^>]+href="(https:\/\/fonts\.googleapis\.com\/css2[^"]+)"[^>]*>/g));
+}
+
 if (!cssLinks.length) {
   const already = (html.match(/data:font\/woff2/g) || []).length;
-  console.log(already ? `fonts already inlined (${already} faces), no external reference` : 'no Google Fonts link found — nothing to inline');
+  if (already) {
+    console.log(`fonts already inlined (${already} faces), no external reference`);
+    process.exit(0);
+  }
+  // Nothing to inline is only good news if nothing was asked for. A stylesheet that names a family
+  // it never loads renders in a fallback face on every machine, and looks like a font bug.
+  const declared = [...html.matchAll(/font-family:\s*["']?([A-Z][A-Za-z0-9 ]+)["']?/g)]
+    .map((m) => m[1].trim())
+    .filter((f) => !/^(ui-|system-|sans-serif|serif|monospace|Arial|Helvetica|Georgia|Consolas|Menlo|Monaco)/i.test(f));
+  const unloaded = [...new Set(declared)];
+  if (unloaded.length) {
+    console.error('no webfont reference found, but the stylesheet declares families it never loads:');
+    unloaded.forEach((f) => console.error(`  ${f}`));
+    console.error('these will silently fall back. Add a <link rel="stylesheet"> for them and re-run.');
+    process.exit(1);
+  }
+  console.log('no Google Fonts link found — nothing to inline');
   process.exit(0);
 }
 

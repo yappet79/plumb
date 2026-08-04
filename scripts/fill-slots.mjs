@@ -57,15 +57,25 @@ for (const slot of slots) {
   const file = pick(slot);
   if (!file) { missing.push(slot); continue; }
   const src = path.join(DIR, file);
+  // Transparency survives or it does not. jpeg has no alpha channel, so a logo or a cut-out
+  // shipped as a transparent png comes back as a solid black rectangle — silently, and it looks
+  // like a design decision rather than a conversion artefact. Caught 04 Aug 2026 on a government
+  // emblem that arrived as a black box on the title slide of a client deck.
+  const alpha = sharp ? (await sharp(src).metadata()).hasAlpha === true : false;
   const buf = sharp
-    ? await sharp(src)
-      .resize(MAX, MAX, { fit: 'inside', withoutEnlargement: true })
-      .modulate(GRAY ? { saturation: 0 } : {})
-      .jpeg({ quality: Q, mozjpeg: true })
-      .toBuffer()
+    ? await (() => {
+      const pipe = sharp(src)
+        .resize(MAX, MAX, { fit: 'inside', withoutEnlargement: true })
+        .modulate(GRAY ? { saturation: 0 } : {});
+      // keep alpha as png; everything else takes the much smaller jpeg
+      return alpha ? pipe.png({ compressionLevel: 9 }).toBuffer()
+        : pipe.jpeg({ quality: Q, mozjpeg: true }).toBuffer();
+    })()
     : fs.readFileSync(src);
   bytes += buf.length;
-  const mime = sharp ? 'image/jpeg' : `image/${path.extname(src).slice(1).replace('jpg', 'jpeg')}`;
+  const mime = sharp
+    ? (alpha ? 'image/png' : 'image/jpeg')
+    : `image/${path.extname(src).slice(1).replace('jpg', 'jpeg')}`;
   const uri = `data:${mime};base64,${buf.toString('base64')}`;
   // Replace the src on the tag carrying this slot, leaving its class, alt and frame alone.
   const re = new RegExp(`(<img[^>]*data-slot="${slot}"[^>]*)>`, 'g');
