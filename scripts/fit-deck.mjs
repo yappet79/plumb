@@ -43,16 +43,23 @@ if (html.includes('/* fit-deck */')) {
 // min(1, …) keeps the deck from scaling UP on a large monitor: enlarging a hand-tuned slide is
 // as wrong as cutting it.
 const css = `<style>/* fit-deck */
-html { overflow-x: hidden; }
+html, body { overflow-x: hidden; }
 body { margin: 0; }
 @media print { body { zoom: 1 !important; } }
 </style>
 <script>/* fit-deck */
 (function () {
   var CANVAS = ${CW};
-  function fit() { document.body.style.zoom = Math.min(1, window.innerWidth / CANVAS); }
+  // clientWidth, not innerWidth. innerWidth includes the vertical scrollbar, and a deck that
+  // scrolls through its slides always has one — so the ratio comes out a scrollbar too large,
+  // the canvas lands a dozen pixels wider than the usable width, and the reader gets a small
+  // horizontal scroll on a deck the checker called clean. Caught 04 Aug 2026.
+  function width() { return document.documentElement.clientWidth || window.innerWidth; }
+  function fit() { document.body.style.zoom = Math.min(1, width() / CANVAS); }
   fit();
   addEventListener('resize', fit);
+  // The first fit runs before webfonts settle; once they do, the scrollbar may appear or go.
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 })();
 </script>`;
 
