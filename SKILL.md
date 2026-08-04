@@ -331,21 +331,32 @@ does not exist. A ready visual language when depth is needed without illustratio
 ### Per-branch notes
 
 - **HTML deck** — design on a 1600×900 canvas, but **the deck must fit any screen from the
-  first render**. A slide fixed at 1600×900 px gets its top eaten on any laptop where the
-  browser chrome takes a slice of the viewport, and the reader never sees the first line.
-  Scale the canvas instead of assuming the screen:
+  first render**. A slide fixed at 1600×900 px runs past the right edge of any laptop window,
+  the page number is cut off, and the reader sees a broken deck and blames the design.
 
-  ```css
-  .deck  { height: 100dvh; display: grid; place-items: center; overflow: hidden; }
-  .stage { width: 1600px; height: 900px;            /* the design canvas, untouched */
-           transform: scale(min(100vw / 1600, 100dvh / 900));
-           transform-origin: center; }
+  **Do not hand-write the fit into the brief. Run `fit-deck.mjs` after generation.**
+
+  ```bash
+  node scripts/fit-deck.mjs deck.html --canvas 1600x900
   ```
 
-  Everything inside keeps its pixel sizes — typography stays proportional and nothing
-  reflows, so a slide tuned by hand looks identical at 1280, 1440 and on a projector.
-  **Check at more than one viewport**: `--viewport 1600x900`, then `1440x780` and `1280x700`.
-  A deck that only passes at its own canvas size has not been checked.
+  It applies `zoom`, which scales the layout *including its scroll height*, so the canvas
+  keeps its pixel geometry — typography and hand-tuned slides stay exactly as drawn.
+
+  **Never `transform: scale()` for this**, and never dictate it in a brief. Two reasons, both
+  paid for on 04 Aug 2026, when this file itself prescribed it and three engines in a row
+  copied it faithfully:
+
+  - `transform: scale(min(100vw / 1600, 100dvh / 900))` is **not valid CSS**. `100vw / 1600`
+    is a length; `scale()` takes a unitless number. The browser drops the declaration in
+    silence and the deck never scales at all.
+  - Even written validly, `transform` leaves the original boxes occupying their old space —
+    the page still overflows horizontally and gaps open between slides.
+
+  **Check at more than one viewport**: `--viewport 1600x900`, then `1440x780`, `1366x768` and
+  `1280x700`. A deck that only passes at its own canvas size **has not been checked** — the
+  canvas width is precisely the one width at which this defect is invisible, which is how it
+  survived three generations before a human opened the file on a laptop.
 
   Self-containment counts for real: embed the font as base64 rather than linking Google
   Fonts. With no network the whole deck falls back to a substitute face, and the slides tuned
