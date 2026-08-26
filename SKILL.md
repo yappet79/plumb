@@ -99,6 +99,8 @@ Then, in four short lines:
 - **What I need from you:** two keys of your own, and anything you like the look of dropped
   into `references/`.
   - `OPENAI_API_KEY` — the three drawing engines. Without it nothing can be drawn at all.
+    Or, through an AI DIAL gateway (EPAM's open-source LLM gateway, Azure-form API):
+    `DIAL_API_KEY` + `DIAL_BASE_URL`, and `--provider dial`. Same engines, your gateway's bill.
   - `REPLICATE_API_TOKEN` — photographs and video, through Flux and Wan. Optional: everything
     except real images works without it.
 
@@ -540,10 +542,24 @@ $env:OPENAI_API_KEY = "sk-..."        # drawing engines
 $env:REPLICATE_API_TOKEN = "r8_..."   # Flux images, Wan video
 ```
 
+Through an AI DIAL gateway instead of api.openai.com (Azure-form: deployment in the path,
+`api-key` header, `api-version` query):
+
+```powershell
+$env:DIAL_BASE_URL = "https://<your-dial-gateway>"
+$env:DIAL_API_KEY  = "..."
+node scripts/bakeoff.mjs --brief brief.md --out ./run1 --provider dial
+```
+
+Deployment names default to the engine ids; map them when the gateway names them differently:
+`PLUMB_DIAL_MODELS="sol=<deployment>,terra=<deployment>,luna=<deployment>"`. `DIAL_API_VERSION`
+defaults to `2024-08-01`. `--dry-run` prints the exact URL and header names for each engine and
+exits before any paid call — it needs no key, so use it to check a gateway setup first.
+
 There is one version, not two. No code reaching into anyone's vault exists in the module —
 so there is nothing to strip before publishing and nothing to forget to strip.
 
-Flags: `--models luna,sol,terra` · `--label <name>` · `--no-render` · `--viewport 1600x900`.
+Flags: `--models luna,sol,terra` · `--label <name>` · `--no-render` · `--viewport 1600x900` · `--provider openai|dial` · `--dry-run`.
 
 **Decks always want `--viewport 1600x900`** — a slide lives in 16:9, and at application height
 the dead zone under the content makes a variant look worse than it is. The contact sheet shows

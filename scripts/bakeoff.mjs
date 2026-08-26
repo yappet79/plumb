@@ -3,6 +3,7 @@
  * Design bake-off — three models draw the same brief, Danila picks the winner.
  *
  *   node bakeoff.mjs --brief brief.md --out ./run1 [--models luna,sol,terra] [--no-render]
+ *                    [--provider openai|dial] [--dry-run]
  *
  * Generates in parallel, renders each result headless, checks it against the spec the brief
  * itself declares, and glues one contact sheet so the choice costs a single glance.
@@ -41,6 +42,30 @@ const doRender = !argv.includes('--no-render');
 // Decks live in 16:9 — rendering them at app height leaves dead space under the slide.
 const viewport = arg('--viewport', '1600x1100').replace('x', ',');
 const maxTokens = parseInt(arg('--max-tokens', '32000'), 10);
+
+// The engines are OpenAI models. They can be reached directly (api.openai.com, Bearer key) or
+// through an OpenAI-compatible gateway in Azure form — EPAM's AI DIAL is the one this was written
+// for: deployment name in the path, `api-key` header, `api-version` query, no `model` in the body.
+// Provider order: --provider, then PLUMB_PROVIDER, then "dial" when only DIAL_API_KEY is set.
+const provider = (arg('--provider') || process.env.PLUMB_PROVIDER
+  || (process.env.DIAL_API_KEY && !process.env.OPENAI_API_KEY ? 'dial' : 'openai')).toLowerCase();
+if (!['openai', 'dial'].includes(provider)) {
+  console.error(`unknown --provider ${provider} — openai | dial`);
+  process.exit(1);
+}
+// --dry-run prints where each engine would be sent and stops before any paid call. It needs no key.
+const dryRun = argv.includes('--dry-run');
+// A DIAL gateway hosts deployments under its own names. Default is the engine id verbatim;
+// override per engine with PLUMB_DIAL_MODELS="sol=<deployment>,terra=<deployment>,luna=<deployment>".
+// A deployment the gateway does not host fails loudly in the contact sheet, never silently.
+const dialModels = Object.fromEntries(
+  (process.env.PLUMB_DIAL_MODELS || '').split(',').map(s => s.trim()).filter(Boolean)
+    .map(kv => kv.split('=').map(x => x.trim())).filter(kv => kv.length === 2 && kv[0] && kv[1])
+);
+const DIAL = {
+  base: (process.env.DIAL_BASE_URL || '').replace(/\/+$/, ''),
+  version: process.env.DIAL_API_VERSION || '2024-08-01',
+};
 
 if (!briefPath || !fs.existsSync(briefPath)) {
   console.error('usage: bakeoff.mjs --brief <file.md> --out <dir> [--models sol,terra,luna]');
@@ -157,10 +182,16 @@ function check(html) {
 
 /* ---------- generation ---------- */
 // Never let a key fragment reach a file or the console, whoever put it in the string.
-const redact = s => String(s)
-  .replace(/sk-[A-Za-z0-9_-]{8,}/g, 'sk-***')
-  .replace(/sbp_[A-Za-z0-9]{8,}/g, 'sbp_***')
-  .replace(/Bearer\s+[A-Za-z0-9._-]{8,}/gi, 'Bearer ***');
+// A gateway key has no recognisable prefix, so the resolved key itself is also scrubbed once known.
+let KEY_VALUE = '';
+const redact = s => {
+  let t = String(s)
+    .replace(/sk-[A-Za-z0-9_-]{8,}/g, 'sk-***')
+    .replace(/sbp_[A-Za-z0-9]{8,}/g, 'sbp_***')
+    .replace(/Bearer\s+[A-Za-z0-9._-]{8,}/gi, 'Bearer ***');
+  if (KEY_VALUE.length >= 8) t = t.split(KEY_VALUE).join('***');
+  return t;
+};
 
 // The key belongs to whoever runs this. Order: environment variable → local hook
 // .local-keys.mjs beside the skill (git-ignored, everyone has their own) → a clear refusal.
@@ -187,25 +218,34 @@ async function draw(name, key) {
   if (!eng) return { name, error: `unknown engine ${name}` };
   const t0 = Date.now();
   try {
-    const r = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: eng.id,
-        messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: userContent }],
-        // A long deck or a full app screen can outgrow the default; truncation arrives as a
-        // half-written file, which reads like a bad design rather than a hit ceiling.
-        max_completion_tokens: maxTokens,
-      }),
-    });
+    const deployment = dialModels[name] || eng.id;
+    const url = provider === 'dial'
+      ? `${DIAL.base}/openai/deployments/${encodeURIComponent(deployment)}/chat/completions?api-version=${encodeURIComponent(DIAL.version)}`
+      : 'https://api.openai.com/v1/chat/completions';
+    const headers = provider === 'dial'
+      ? { 'api-key': key, 'Content-Type': 'application/json' }
+      : { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' };
+    const body = {
+      // Azure-form gateways take the model from the path; a `model` in the body is rejected or ignored.
+      ...(provider === 'dial' ? {} : { model: eng.id }),
+      messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: userContent }],
+      // A long deck or a full app screen can outgrow the default; truncation arrives as a
+      // half-written file, which reads like a bad design rather than a hit ceiling.
+      max_completion_tokens: maxTokens,
+    };
+    if (dryRun) return { name, dryRun: true, url, headerNames: Object.keys(headers), model: deployment };
+    const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
     const d = await r.json();
     // Provider error text lands in the contact sheet and stdout; auth failures echo the key back.
-    if (d.error) return { name, error: redact(d.error.message) };
+    if (d.error) return { name, error: redact(typeof d.error === 'string' ? d.error : d.error.message || JSON.stringify(d.error)) };
     const html = (d.choices?.[0]?.message?.content || '').replace(/^```[a-z]*\n?/i, '').replace(/```\s*$/, '').trim();
     if (!html) return { name, error: 'empty response' };
     const file = path.join(outDir, `${label}-${name}.html`);
     fs.writeFileSync(file, html);
-    const cost = (d.usage.prompt_tokens * 2.5 / 1e6 + d.usage.completion_tokens * 10 / 1e6);
+    // Estimate at OpenAI list prices for the engines; a gateway bills by its own rate card, so
+    // through DIAL this is an order of magnitude, not an invoice.
+    const usage = d.usage || { prompt_tokens: 0, completion_tokens: 0 };
+    const cost = ((usage.prompt_tokens || 0) * 2.5 / 1e6 + (usage.completion_tokens || 0) * 10 / 1e6);
     return { name, file, html, secs: Math.round((Date.now() - t0) / 1000), cost, ...check(html) };
   } catch (e) {
     return { name, error: redact(String(e)) };
@@ -302,22 +342,37 @@ function contactSheet(rows) {
 }
 
 /* ---------- run ---------- */
-let key;
-try {
-  key = await resolveKey('OPENAI_API_KEY', 'openai', 'OpenAI — the three drawing engines');
-} catch (e) {
-  console.error(`\n  ${e.message}\n`);
-  console.error('  PowerShell:  $env:OPENAI_API_KEY = "sk-..."');
-  console.error('  bash:        export OPENAI_API_KEY=sk-...\n');
-  process.exit(1);
+let key = 'dry-run';
+if (provider === 'dial' && !DIAL.base) {
+  console.error('\n  --provider dial needs DIAL_BASE_URL — the gateway URL your DIAL key belongs to.\n');
+  process.exit(2);
 }
-console.log(`brief: ${path.basename(briefPath)}  ·  engines: ${picked.join(', ')}`);
+if (!dryRun) {
+  try {
+    key = provider === 'dial'
+      ? await resolveKey('DIAL_API_KEY', 'dial', 'AI DIAL — the drawing engines through your gateway')
+      : await resolveKey('OPENAI_API_KEY', 'openai', 'OpenAI — the three drawing engines');
+  } catch (e) {
+    console.error(`\n  ${e.message}\n`);
+    process.exit(1);
+  }
+  KEY_VALUE = key;
+}
+console.log(`brief: ${path.basename(briefPath)}  ·  engines: ${picked.join(', ')}  ·  via ${provider === 'dial' ? `DIAL ${DIAL.base}` : 'api.openai.com'}${dryRun ? '  ·  DRY RUN' : ''}`);
 if (source) console.log(`source: ${path.basename(sourcePath)} — ${(source.length / 1024).toFixed(0)} KB into the prompt (not into the spec)`);
 if (refs.length) console.log(`references: ${refMarkup.length} as markup, ${refImages.length} as image — ${refs.map(f => path.basename(f)).join(', ')}`);
 if (SPEC.hexes.length) console.log(`spec: ${SPEC.hexes.length} colours, typeface ${SPEC.face || '—'}, type ≥${SPEC.minSize || '—'}px, weight ≤${SPEC.maxWeight || '—'}`);
 console.log('drawing in parallel…\n');
 
 const results = await Promise.all(picked.map(n => draw(n, key)));
+if (dryRun) {
+  for (const r of results) {
+    if (r.error) { console.log(`  ✗ ${r.name}: ${r.error}`); continue; }
+    console.log(`  ${r.name.padEnd(6)} → ${r.model}\n         ${r.url}\n         headers: ${r.headerNames.join(', ')}`);
+  }
+  console.log('\ndry run — nothing sent, nothing spent');
+  process.exit(0);
+}
 if (doRender) {
   await Promise.all(results.map(async r => { r.shot = await shoot(r); }));
 }
