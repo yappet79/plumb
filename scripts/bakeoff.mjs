@@ -10,6 +10,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawn, spawnSync } from 'node:child_process';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { chromePath, baseArgs, fileUrl } from './lib/chrome.mjs';
@@ -47,12 +48,17 @@ const maxTokens = parseInt(arg('--max-tokens', '32000'), 10);
 // through an OpenAI-compatible gateway in Azure form — EPAM's AI DIAL is the one this was written
 // for: deployment name in the path, `api-key` header, `api-version` query, no `model` in the body.
 // Provider order: --provider, then PLUMB_PROVIDER, then "dial" when only DIAL_API_KEY is set.
+// A third road, `codex`, reaches the same engines through the OpenAI Codex CLI signed in with a
+// ChatGPT subscription (`codex login`): no API key, the run draws on that subscription's quota
+// instead of an invoice. Needs `codex` on PATH (npm i -g @openai/codex, 0.153+).
 const provider = (arg('--provider') || process.env.PLUMB_PROVIDER
   || (process.env.DIAL_API_KEY && !process.env.OPENAI_API_KEY ? 'dial' : 'openai')).toLowerCase();
-if (!['openai', 'dial'].includes(provider)) {
-  console.error(`unknown --provider ${provider} — openai | dial`);
+if (!['openai', 'dial', 'codex'].includes(provider)) {
+  console.error(`unknown --provider ${provider} — openai | dial | codex`);
   process.exit(1);
 }
+// Codex runs with no reasoning unless told; design work wants some. PLUMB_CODEX_EFFORT overrides.
+const codexEffort = process.env.PLUMB_CODEX_EFFORT || 'medium';
 // --dry-run prints where each engine would be sent and stops before any paid call. It needs no key.
 const dryRun = argv.includes('--dry-run');
 // A DIAL gateway hosts deployments under its own names. Default is the engine id verbatim;
@@ -213,10 +219,66 @@ This module calls paid APIs — your key, your bill. Nothing is spent until you 
 `);
   process.exit(2);
 }
+// The Codex road: one `codex exec` per engine, brief on stdin, image references as -i files,
+// the page back through -o. Read-only sandbox, ephemeral session, no repo check — it is a drawing
+// call, not an agent run. Usage is not reported by the CLI, so cost prints as 0 (subscription).
+// Node refuses to spawn a .cmd shim without a shell (CVE-2024-27980), and a shell would mangle
+// the quoted -c value — so on Windows the npm shim is unwrapped and its codex.js run under node.
+function codexLauncher() {
+  if (process.platform !== 'win32') return { bin: 'codex', pre: [] };
+  const w = spawnSync('where', ['codex.cmd'], { encoding: 'utf8', windowsHide: true });
+  const shim = (w.stdout || '').split(/\r?\n/).map(l => l.trim()).find(Boolean);
+  if (shim) {
+    const js = path.join(path.dirname(shim), 'node_modules', '@openai', 'codex', 'bin', 'codex.js');
+    if (fs.existsSync(js)) return { bin: process.execPath, pre: [js] };
+  }
+  return { bin: 'codex.cmd', pre: [], shell: true };
+}
+// Async so the three engines really draw at once — spawnSync would line them up.
+function runCodex(bin, args, stdin, useShell) {
+  return new Promise(resolve => {
+    const child = spawn(bin, args, { windowsHide: true, shell: useShell, stdio: ['pipe', 'pipe', 'pipe'] });
+    let out = '', err = '';
+    child.stdout.on('data', d => { out += d; });
+    child.stderr.on('data', d => { err += d; });
+    child.on('error', e => resolve({ error: e, status: null, stdout: out, stderr: err }));
+    child.on('close', status => resolve({ status, stdout: out, stderr: err }));
+    child.stdin.on('error', () => { /* codex closed early; the exit status tells the story */ });
+    child.stdin.end(stdin);
+  });
+}
+async function drawViaCodex(name, eng, t0) {
+  const launch = codexLauncher();
+  const bin = launch.bin;
+  const outFile = path.join(outDir, `.codex-${label}-${name}.txt`);
+  const args = [...launch.pre, 'exec', '-m', eng.id, '-s', 'read-only', '--skip-git-repo-check', '--ephemeral',
+    '-c', `model_reasoning_effort="${codexEffort}"`, '-o', outFile];
+  for (const f of refImages) args.push('-i', path.resolve(f));
+  args.push('-');
+  const stdin = `${SYSTEM}\n\n---\n\nReturn the complete HTML file and nothing else — no prose before or after it.\n\n${fullPrompt}`;
+  if (dryRun) return { name, dryRun: true, url: `${bin} ${args.slice(0, -1).join(' ')} -`, headerNames: ['(none — ChatGPT sign-in)'], model: eng.id };
+  const r = await runCodex(bin, args, stdin, !!launch.shell);
+  if (r.error) return { name, error: redact(String(r.error.message || r.error)) };
+  const raw = fs.existsSync(outFile) ? fs.readFileSync(outFile, 'utf8') : '';
+  try { fs.unlinkSync(outFile); } catch { /* nothing to clean */ }
+  if (!raw.trim()) {
+    const tail = (r.stderr || r.stdout || '').split('\n').filter(l => /error/i.test(l)).slice(-2).join(' ');
+    return { name, error: redact(tail || `codex exited ${r.status} with no page`) };
+  }
+  const m = raw.match(/<!doctype html[\s\S]*$|<html[\s\S]*$/i);
+  const html = (m ? m[0] : raw).replace(/^```[a-z]*\n?/i, '').replace(/```\s*$/, '').trim();
+  const file = path.join(outDir, `${label}-${name}.html`);
+  fs.writeFileSync(file, html);
+  return { name, file, html, secs: Math.round((Date.now() - t0) / 1000), cost: 0, ...check(html) };
+}
+
 async function draw(name, key) {
   const eng = ENGINES[name];
   if (!eng) return { name, error: `unknown engine ${name}` };
   const t0 = Date.now();
+  if (provider === 'codex') {
+    try { return await drawViaCodex(name, eng, t0); } catch (e) { return { name, error: redact(String(e)) }; }
+  }
   try {
     const deployment = dialModels[name] || eng.id;
     const url = provider === 'dial'
@@ -347,7 +409,7 @@ if (provider === 'dial' && !DIAL.base) {
   console.error('\n  --provider dial needs DIAL_BASE_URL — the gateway URL your DIAL key belongs to.\n');
   process.exit(2);
 }
-if (!dryRun) {
+if (!dryRun && provider !== 'codex') {
   try {
     key = provider === 'dial'
       ? await resolveKey('DIAL_API_KEY', 'dial', 'AI DIAL — the drawing engines through your gateway')
@@ -358,7 +420,7 @@ if (!dryRun) {
   }
   KEY_VALUE = key;
 }
-console.log(`brief: ${path.basename(briefPath)}  ·  engines: ${picked.join(', ')}  ·  via ${provider === 'dial' ? `DIAL ${DIAL.base}` : 'api.openai.com'}${dryRun ? '  ·  DRY RUN' : ''}`);
+console.log(`brief: ${path.basename(briefPath)}  ·  engines: ${picked.join(', ')}  ·  via ${provider === 'dial' ? `DIAL ${DIAL.base}` : provider === 'codex' ? 'Codex CLI (ChatGPT subscription)' : 'api.openai.com'}${dryRun ? '  ·  DRY RUN' : ''}`);
 if (source) console.log(`source: ${path.basename(sourcePath)} — ${(source.length / 1024).toFixed(0)} KB into the prompt (not into the spec)`);
 if (refs.length) console.log(`references: ${refMarkup.length} as markup, ${refImages.length} as image — ${refs.map(f => path.basename(f)).join(', ')}`);
 if (SPEC.hexes.length) console.log(`spec: ${SPEC.hexes.length} colours, typeface ${SPEC.face || '—'}, type ≥${SPEC.minSize || '—'}px, weight ≤${SPEC.maxWeight || '—'}`);

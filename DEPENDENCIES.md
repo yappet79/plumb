@@ -52,7 +52,7 @@ you change a floor in a doc, grep for the old number in the briefs and in this f
 
 | Script | Lines | Reaches | Needs a key | Risk |
 |---|---|---|---|---|
-| `bakeoff.mjs` | ~370 | OpenAI API or an AI DIAL gateway (Azure-form), Chrome | `OPENAI_API_KEY`, or `DIAL_API_KEY` + `DIAL_BASE_URL` | **HIGH** — the only place that spends money on engines; also renders and builds the contact sheet |
+| `bakeoff.mjs` | ~420 | OpenAI API, an AI DIAL gateway (Azure-form), or the Codex CLI on a ChatGPT sign-in, Chrome | `OPENAI_API_KEY`, or `DIAL_API_KEY` + `DIAL_BASE_URL`, or none with `--provider codex` | **HIGH** — the only place that spends money on engines; also renders and builds the contact sheet |
 | `image.mjs` | 98 | Replicate API | `REPLICATE_API_TOKEN` | MEDIUM — spends money, isolated otherwise |
 | `check-layout.mjs` | 420 | Chrome | — | **HIGH** — the gate. A false pass here is worse than a crash |
 | `render-png.mjs` | 229 | Chrome | — | MEDIUM — produces the artefact people actually post |

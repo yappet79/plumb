@@ -101,6 +101,9 @@ Then, in four short lines:
   - `OPENAI_API_KEY` — the three drawing engines. Without it nothing can be drawn at all.
     Or, through an AI DIAL gateway (EPAM's open-source LLM gateway, Azure-form API):
     `DIAL_API_KEY` + `DIAL_BASE_URL`, and `--provider dial`. Same engines, your gateway's bill.
+    Or, with no key at all: `--provider codex` sends the same engines through the OpenAI Codex
+    CLI signed in with your ChatGPT subscription (`npm i -g @openai/codex`, `codex login`).
+    Your subscription's quota, not an invoice; the cost column prints 0.
   - `REPLICATE_API_TOKEN` — photographs and video, through Flux and Wan. Optional: everything
     except real images works without it.
 

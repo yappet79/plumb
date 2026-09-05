@@ -103,7 +103,7 @@ node scripts/check-layout.mjs ./out/design-terra.html --container '.slide'
 ```
 
 **Needs:** Node 20+ and Chrome. No `npm install` required — `sharp` is optional and only makes inlined photos ~30x smaller.
-**Keys are yours:** `OPENAI_API_KEY` for the engines (or `DIAL_API_KEY` + `DIAL_BASE_URL` with `--provider dial` to reach the same engines through an AI DIAL gateway), `REPLICATE_API_TOKEN` for images.
+**Keys are yours:** `OPENAI_API_KEY` for the engines (or `DIAL_API_KEY` + `DIAL_BASE_URL` with `--provider dial` to reach the same engines through an AI DIAL gateway, or no key and `--provider codex` to reach them through the OpenAI Codex CLI on your ChatGPT subscription), `REPLICATE_API_TOKEN` for images.
 Nothing is spent until you set one — the module has no account of its own and never reaches
 into anyone else's.
 
