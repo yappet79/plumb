@@ -103,7 +103,9 @@ Then, in four short lines:
     `DIAL_API_KEY` + `DIAL_BASE_URL`, and `--provider dial`. Same engines, your gateway's bill.
     Or, with no key at all: `--provider codex` sends the same engines through the OpenAI Codex
     CLI signed in with your ChatGPT subscription (`npm i -g @openai/codex`, `codex login`).
-    Your subscription's quota, not an invoice; the cost column prints 0.
+    Your subscription's quota, not an invoice; the cost column prints 0. A ChatGPT subscription
+    is for the person who holds it — fine for drawing your own work, not for running Plumb as a
+    service for others; that road is the API key.
   - `REPLICATE_API_TOKEN` — photographs and video, through Flux and Wan. Optional: everything
     except real images works without it.
 
