@@ -2,7 +2,7 @@
 /**
  * Design bake-off — three models draw the same brief, Danila picks the winner.
  *
- *   node bakeoff.mjs --brief brief.md --out ./run1 [--models luna,sol,terra] [--no-render]
+ *   node bakeoff.mjs --brief brief.md --out ./run1 [--models sol,terra,mira] [--no-render]
  *                    [--provider openai|dial] [--dry-run]
  *
  * Generates in parallel, renders each result headless, checks it against the spec the brief
@@ -24,6 +24,8 @@ const ENGINES = {
   sol:   { id: 'gpt-5.6-sol',   note: 'builds the application · slow · dense' },
   terra: { id: 'gpt-5.6-terra', note: 'air and findings · takes risks' },
   luna:  { id: 'gpt-5.6-luna',  note: 'speed · clean' },
+  // Mira is gpt-6-astra, the one GPT-6 the ChatGPT subscription serves through Codex (23 Sep 2026).
+  mira:  { id: 'gpt-6-astra',   note: 'GPT-6 · reads the whole brief' },
 };
 
 const SYSTEM = `You are a senior product designer who ships production front-end.
@@ -38,7 +40,7 @@ const briefPath = arg('--brief');
 const outDir = path.resolve(arg('--out', './design-run'));
 // Label becomes a filename — keep it to characters that cannot escape the output directory.
 const label = arg('--label', 'design').replace(/[^A-Za-z0-9._-]/g, '-').slice(0, 60) || 'design';
-const picked = arg('--models', 'sol,terra,luna').split(',').map(s => s.trim()).filter(Boolean);
+const picked = arg('--models', 'sol,terra,mira').split(',').map(s => s.trim()).filter(Boolean);
 const doRender = !argv.includes('--no-render');
 // Decks live in 16:9 — rendering them at app height leaves dead space under the slide.
 const viewport = arg('--viewport', '1600x1100').replace('x', ',');
@@ -74,7 +76,7 @@ const DIAL = {
 };
 
 if (!briefPath || !fs.existsSync(briefPath)) {
-  console.error('usage: bakeoff.mjs --brief <file.md> --out <dir> [--models sol,terra,luna]');
+  console.error('usage: bakeoff.mjs --brief <file.md> --out <dir> [--models sol,terra,mira]');
   process.exit(1);
 }
 const brief = fs.readFileSync(briefPath, 'utf8');

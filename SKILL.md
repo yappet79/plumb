@@ -511,6 +511,7 @@ paper or cream textures · one recurring device carrying every number on the scr
 | `gpt-5.6-sol` | builds the **application**: shell, sidebar, state badges. Slow (~2 min), densest | complex screens |
 | `gpt-5.6-terra` | **air** and findings. Takes risks, sometimes breaks the spec | landings, decks, concepts |
 | `gpt-5.6-luna` | **speed**: ~40 seconds, clean | iterations, drafts |
+| `gpt-6-astra` (`mira`) | GPT-6, the only one the ChatGPT subscription serves through Codex (23 Sep 2026). In the default trio in place of luna | anything; not yet measured against the three |
 
 `gpt-5.5` is deliberately not in the rotation: measured on this work it draws less well than the
 three above. Split the models by what each is actually good at.
