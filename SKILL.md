@@ -562,6 +562,19 @@ Deployment names default to the engine ids; map them when the gateway names them
 defaults to `2024-08-01`. `--dry-run` prints the exact URL and header names for each engine and
 exits before any paid call — it needs no key, so use it to check a gateway setup first.
 
+EPAM AI DIAL, as set up on 29 Sep 2026: the gateway names its deployments with a date suffix, so the
+default names get a 404. The base URL is the root only, and Mira (`gpt-6-astra`) is not on this gateway,
+so name the trio yourself:
+
+```powershell
+$env:DIAL_BASE_URL     = "https://ai-proxy.lab.epam.com"
+$env:PLUMB_DIAL_MODELS = "sol=gpt-5.6-sol-2026-07-09,terra=gpt-5.6-terra-2026-07-09,luna=gpt-5.6-luna-2026-07-09"
+node scripts/bakeoff.mjs --brief brief.md --out ./run1 --provider dial --models sol,terra,luna
+```
+
+The date suffix changes when the gateway updates its models. The current names are listed at
+`GET {DIAL_BASE_URL}/openai/models` with the `api-key` header.
+
 There is one version, not two. No code reaching into anyone's vault exists in the module —
 so there is nothing to strip before publishing and nothing to forget to strip.
 
