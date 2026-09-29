@@ -40,7 +40,14 @@ const briefPath = arg('--brief');
 const outDir = path.resolve(arg('--out', './design-run'));
 // Label becomes a filename — keep it to characters that cannot escape the output directory.
 const label = arg('--label', 'design').replace(/[^A-Za-z0-9._-]/g, '-').slice(0, 60) || 'design';
-const picked = arg('--models', 'sol,terra,mira').split(',').map(s => s.trim()).filter(Boolean);
+// Engines: --models, then PLUMB_MODELS, then sol,terra,mira. A team whose gateway has no mira sets
+// PLUMB_MODELS=sol,terra,luna once, next to its DIAL settings, instead of remembering a flag every run.
+const picked = (arg('--models') || process.env.PLUMB_MODELS || 'sol,terra,mira').split(',').map(s => s.trim()).filter(Boolean);
+const unknownEngines = picked.filter(n => !ENGINES[n]);
+if (unknownEngines.length) {
+  console.error(`unknown engine ${unknownEngines.join(', ')} — ${Object.keys(ENGINES).join(' | ')}`);
+  process.exit(1);
+}
 const doRender = !argv.includes('--no-render');
 // Decks live in 16:9 — rendering them at app height leaves dead space under the slide.
 const viewport = arg('--viewport', '1600x1100').replace('x', ',');

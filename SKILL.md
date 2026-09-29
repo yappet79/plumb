@@ -564,12 +564,13 @@ exits before any paid call — it needs no key, so use it to check a gateway set
 
 EPAM AI DIAL, as set up on 29 Sep 2026: the gateway names its deployments with a date suffix, so the
 default names get a 404. The base URL is the root only, and Mira (`gpt-6-astra`) is not on this gateway,
-so name the trio yourself:
+so `PLUMB_MODELS` sets the trio once, next to the rest:
 
 ```powershell
 $env:DIAL_BASE_URL     = "https://ai-proxy.lab.epam.com"
+$env:PLUMB_MODELS      = "sol,terra,luna"
 $env:PLUMB_DIAL_MODELS = "sol=gpt-5.6-sol-2026-07-09,terra=gpt-5.6-terra-2026-07-09,luna=gpt-5.6-luna-2026-07-09"
-node scripts/bakeoff.mjs --brief brief.md --out ./run1 --provider dial --models sol,terra,luna
+node scripts/bakeoff.mjs --brief brief.md --out ./run1 --provider dial
 ```
 
 The date suffix changes when the gateway updates its models. The current names are listed at
@@ -578,7 +579,7 @@ The date suffix changes when the gateway updates its models. The current names a
 There is one version, not two. No code reaching into anyone's vault exists in the module —
 so there is nothing to strip before publishing and nothing to forget to strip.
 
-Flags: `--models luna,sol,terra` · `--label <name>` · `--no-render` · `--viewport 1600x900` · `--provider openai|dial` · `--dry-run`.
+Flags: `--models sol,terra,mira` (default; `PLUMB_MODELS` sets it for every run, `--models` wins over it; an unknown name stops the run before any call) · `--label <name>` · `--no-render` · `--viewport 1600x900` · `--provider openai|dial|codex` · `--dry-run`.
 
 **Decks always want `--viewport 1600x900`** — a slide lives in 16:9, and at application height
 the dead zone under the content makes a variant look worse than it is. The contact sheet shows
