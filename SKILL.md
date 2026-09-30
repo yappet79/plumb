@@ -656,6 +656,21 @@ Two traps this script exists to close, both paid for in wasted rounds:
 A frame under 8 KB is flat colour, and the script says so instead of reporting a byte count
 that passes for a picture.
 
+## Animated page → video
+
+A slide or scene that moves is a page whose every frame is a function of time: it exposes
+`window.__render(ms)`, draws that moment and nothing else, and renders a still when opened with
+`?still`. Then recording is deterministic:
+
+```bash
+node scripts/record-frames.mjs scene.html --out frames --size 1080x1350 --fps 30 --from 0 --to 36000
+ffmpeg -framerate 30 -i frames/f%05d.png -c:v libx264 -pix_fmt yuv420p scene.mp4
+```
+
+Each frame is `__render(ms)` plus a DevTools screenshot — no racing the animation, no scrolling,
+the same file gives the same frames. A page without `__render` is refused with the reason rather
+than recorded as blank frames. Same Chrome guards as the rest: own profile, network blackhole.
+
 ## Type sizes are a property of the medium
 
 **`typography.md`** carries the numbers per artefact, and they contradict each other on
